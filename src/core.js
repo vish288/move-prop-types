@@ -4,35 +4,36 @@
  * Module dependencies.
  */
 const propReplace = require('commander');
-const path = require('path');
-const fs = require('fs');
-const {installPackage} = require('./helper');
+const {argv} = require('process');
 
-const helpExamples = () => {
-    console.log('');
-    console.log('  Examples:');
-    console.log('');
-    console.log('    $ prop-replace --help for info');
-    console.log('    $ prop-replace -p ../dir1/dir2/filename.[js|jsx] , This will run replace only on the given file.');
-    console.log('    $ prop-replace -f ../dir1/dir2 , This will run the update for all the files inside the given directory');
-    console.log('    $ prop-replace -if ../dir1/dir2 , This will install prop-types to dependencies and run the update for all the files inside the given directory');
-    console.log('');
-};
+const {installPackage, updateFile, updateFolder, helpExamples, findMatch} = require('./helper');
+const packageJson = require('../package.json');
 
 // const options = `${propReplace.install ? 'install' : ''} and${(propReplace.path ? ' single file with relative path' : '') || (propReplace.folder ? ' folder ' + process.argv + ' of js(x) files' : '')}`;
 //
 // console.log(`Prop replace has been called with commands ${options}`);
 // console.log('');
 
-propReplace
-    .alias('move-prop-types')
-    .usage('[options] <file(s) ...>')
-    .version('0.1.0')
-    .option('-I, --install', 'install the latest proptypes and then continue with rest of the commands', installPackage)
-    .option('-p, --path', 'input path information of the file to update')
-    .option('-f, --folder', 'input folder info where all the files would be updated')
-    .on('--help', helpExamples)
-    .parse(process.argv);
+// No or unknown options given, will trigger help text
+if (!(argv.indexOf('--install') !== -1 || argv.indexOf('-I') !== -1) &&
+    !(argv.indexOf('--path') !== -1 || argv.indexOf('-P') !== -1) &&
+    !(argv.indexOf('--folder') !== -1 || argv.indexOf('-F') !== -1)) {
+    argv.push('--help');
+}
 
+const filePath = findMatch(argv, ['--path', '-P']);
+
+const folderPath = findMatch(argv, ['--folder', '-F']);
+
+propReplace
+    .command('move-prop-types')
+    .alias('mpt')
+    .usage('[options] [file|folder]')
+    .version(`${packageJson.version}`)
+    .option('-I, --install', 'install the latest proptypes and then continue with rest of the commands', installPackage, {cmd: process.argv})
+    .option('-P, --path', 'input path information of the file to update', updateFile, filePath)
+    .option('-F, --folder', 'input folder info where all the files would be updated', updateFolder, folderPath)
+    .on('--help , -H', helpExamples)
+    .parse(argv);
 
 exports.module = propReplace;
