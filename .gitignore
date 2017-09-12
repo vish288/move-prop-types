@@ -1,0 +1,13 @@
+# generic
+build
+node_modules
+
+# IDE specific
+.idea
+*.codekit
+.DS_Store
+
+#logs + lock files.
+log
+*.log
+*.lock

@@ -9,8 +9,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "",
-    "dev": "nodemon index.js -if test",
-    "prod": ""
+    "dev": "nodemon index.js -If test",
+    "prod": "",
+    "lint": "eslint src index.js > eslint_$(date +\"%d%m%Y\").log",
+    "clean": "rimraf *.log build"
   },
   "author": "Visweshwaran S",
   "license": "MIT",
@@ -21,7 +23,8 @@
   },
   "devDependencies": {
     "eslint": "^4.6.1",
-    "nodemon": "^1.12.0"
-  }
-  "repository": ""
+    "nodemon": "^1.12.0",
+    "rimraf": "^2.6.2"
+  },
+  "repository": "https://github.com/vichu1988/move-prop-types.git"
 }
