@@ -1,3 +1,7 @@
+#!/usr/bin/env node
+/**
+ * Module dependencies
+ */
 const {exec} = require('child_process');
 const chalk = require('chalk');
 
@@ -13,7 +17,7 @@ exports.installPackage = (cmd) => {
 
     } catch (e) {
         console.log('Installing prop-types to your project');
-        exec(`npm i --color=always prop-types -S `, (err, stdout, stderr) => {
+        exec('npm i --color=always prop-types -S', (err, stdout, stderr) => {
             if (err) {
                 // node couldn't execute the command
                 console.log(`stderr: ${stderr}`);
