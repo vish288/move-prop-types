@@ -2,7 +2,7 @@
   "name": "move-prop-types",
   "version": "0.1.7",
   "description": "\"Help quickly replace the prop type checker in older react projects to map to prop-types\"",
-  "main": "src/core.js",
+  "main": "index.js",
   "modules": "",
   "keywords": [
     "npm",
@@ -23,8 +23,8 @@
     "test": "test"
   },
   "bin": {
-    "move-prop-types": "./src/core.js",
-    "mpt": "./src/core.js"
+    "move-prop-types": "./index.js",
+    "mpt": "./index.js"
   },
   "preferGlobal": true,
   "engines": {
