@@ -3,16 +3,17 @@
  STM - DealerInformation
  **/
 
-import React, { PropTypes, PureComponent } from 'react';
-import React, { PureComponent, PropTypes } from 'react';
+import React, {  PureComponent } from 'react';
+import PropTypes from 'prop-types';
+import React, { PureComponent } from 'react';
 
-import React, { PropTypes } from 'react';
+import React from 'react';
 
 const PropTypes = require('react').PropTypes;
 
 DealerInformation.propTypes = {
-  address: React.PropTypes.string,
-  className: React.PropTypes.string,
+  address: PropTypes.string,
+  className: PropTypes.string,
   dealerSite: PropTypes.shape({Button}.propTypes),
   dealershipName: PropTypes.string,
   distanceAway: PropTypes.string,
@@ -28,7 +29,7 @@ DealerInformation.propTypes = {
   }),
   hoursOfOperation: PropTypes.string,
   id: PropTypes.string,
-  onDealerSite: React.PropTypes.func,
+  onDealerSite: PropTypes.func,
   onHeadingClick: PropTypes.func,
   phoneNumber: PropTypes.string,
   text: PropTypes.string,
