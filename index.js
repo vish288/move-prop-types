@@ -1,2 +1,1 @@
-#!/usr/bin/env node
-module.exports = require('./src/core');
+export { default as mpt } from './src/core';

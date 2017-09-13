@@ -1,20 +1,17 @@
-#!/usr/bin/env node
 /**
  * Module dependencies
  */
-const util = require('util');
-const { exec } = require('child_process');
-const chalk = require('chalk');
-const { readdir, stat, readFile, writeFile, lstatSync } = require('fs');
-const { fileEncoding, importState, es6PropTypeJust, es6PropTypeLeft, es6PropTypeRight, reactProto } = require('./constants');
+import chalk from 'chalk';
+import { es6PropTypeJust, es6PropTypeLeft, es6PropTypeRight, fileEncoding, importState, reactProto } from './constants';
 
-const asyncExec = util.promisify(exec);
+const { lstatSync, readdir, readFile, stat, writeFile } = require('fs');
+const { exec } = require('child_process');
 
 /**
  *
  * @return {Promise.<void>}
  */
-exports.installPackage = async () => {
+export const installPackage = () => {
   console.log('');
   try {
     // Check if the package is installed in the project
@@ -23,7 +20,7 @@ exports.installPackage = async () => {
     console.log('');
   } catch (e) {
     console.log('Installing prop-types to your project');
-    await asyncExec('npm i --color=always prop-types -S', (err, stdout, stderr) => {
+    exec('npm i --color=always prop-types -S', (err, stdout, stderr) => {
       if (err) {
         // node couldn't execute the command
         console.log(`stderr: ${stderr}`);
@@ -63,7 +60,7 @@ const writeFileAsyncEs6 = (fileAndPath) => {
     newData = newData.replace(es6PropTypeLeft, '');
     newData = newData.replace(es6PropTypeRight, ' }');
     newData = (typeof newData === 'string') ? newData.replace(reactProto, 'PropTypes.') : newData;
-    newData = (typeof newData === 'string') ? [ newData.slice(0, newData.indexOf('\';\n') + 2), importState, newData.slice(newData.indexOf('\';\n') + 2) ].join('') : newData;
+    newData = (typeof newData === 'string') ? [newData.slice(0, newData.indexOf('\';\n') + 2), importState, newData.slice(newData.indexOf('\';\n') + 2)].join('') : newData;
     newData ? writeFile(fileAndPath, newData, fileEncoding, (err) => {
       if (err) {
         throw err;
@@ -86,7 +83,7 @@ const writeFileAsyncEs5 = (fileAndPath) => {
     let newData = (typeof data === 'string') ? data.replace(/React.PropTypes[.]?/, 'PropTypes.') : data;
     newData = (typeof newData === 'string') ? newData.replace(/const PropTypes = require('react').PropTypes;$/, '') : newData;
     newData = (typeof newData === 'string') ? newData.replace(/{PropTypes} = require('react').PropTypes/, '') : newData;
-    newData = (typeof newData === 'string') ? [ newData.slice(0, newData.indexOf('\';\n') + 2), importState, newData.slice(newData.indexOf('\';\n') + 2) ].join('') : newData;
+    newData = (typeof newData === 'string') ? [newData.slice(0, newData.indexOf('\';\n') + 2), importState, newData.slice(newData.indexOf('\';\n') + 2)].join('') : newData;
 
     newData ? writeFile(fileAndPath, newData, fileEncoding, (err) => {
       if (err) {
@@ -101,7 +98,7 @@ const writeFileAsyncEs5 = (fileAndPath) => {
  * @param cmd
  * @param {string} fileAndPath
  */
-const updateFile = (cmd, fileAndPath) => {
+export const updateFile = (cmd, fileAndPath) => {
   // console.log(`option ${chalk.bold.magenta.underline('P')} ${cmd} ${val}`);
   if (/[.]/.exec(fileAndPath)) {
     if (!(/\S+.js[x]?$/.test(fileAndPath))) {
@@ -136,7 +133,7 @@ const updateFile = (cmd, fileAndPath) => {
  * @param cmd
  * @param {string} folderName
  */
-const updateFolder = (cmd, folderName) => {
+export const updateFolder = (cmd, folderName) => {
   console.log('');
   readdir(folderName, (err, files) => {
     if (err) {
@@ -161,7 +158,7 @@ const updateFolder = (cmd, folderName) => {
 /**
  *
  */
-exports.helpExamples = () => {
+export const helpExamples = () => {
   console.log('');
   console.log('  Examples:');
   console.log('');
@@ -178,18 +175,15 @@ exports.helpExamples = () => {
  * @param {array} setToMatch
  * @return {string}
  */
-exports.findMatch = (givenValue, setToMatch) => {
+export const findMatch = (givenValue, setToMatch) => {
   let index = 0;
   if (!(givenValue instanceof Array)) {
     return;
   }
   givenValue.filter((val) => {
-    if ((val === setToMatch[ 0 ]) || (val === setToMatch[ 1 ])) {
+    if ((val === setToMatch[0]) || (val === setToMatch[1])) {
       index = givenValue.indexOf(val) + 1;
     }
   });
-  return index ? givenValue[ index ] : '';
+  return index ? givenValue[index] : '';
 };
-
-exports.updateFile = updateFile;
-exports.updateFolder = updateFolder;
