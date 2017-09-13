@@ -96,7 +96,7 @@ const writeFileAsyncEs5 = (fileAndPath) => {
 const updateFile = (cmd, fileAndPath) => {
   // console.log(`option ${chalk.bold.magenta.underline('P')} ${cmd} ${val}`);
   if (/[.]/.exec(fileAndPath)) {
-    if (!(/\S+.js[x]?/.test(fileAndPath))) {
+    if (!(/\S+.js[x]?$/.test(fileAndPath))) {
       return;
     }
   } else {
