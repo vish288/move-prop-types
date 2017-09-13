@@ -2,7 +2,7 @@
   "rules": {
     "indent": [
       2,
-      4,
+      2,
       {
         "SwitchCase": 1
       }
@@ -116,5 +116,6 @@
   ],
   "parserOptions": {
     "ecmaVersion": 8,
+    "sourceType": "module"
   }
 }
