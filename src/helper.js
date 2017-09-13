@@ -52,9 +52,16 @@ const writeFileAsyncEs6 = (fileAndPath) => {
     if (err) {
       throw err;
     }
+    const isPropTypeUsed = es6PropTypeJust.test(data) || es6PropTypeLeft.test(data) || es6PropTypeLeft.test(data);
+    const isPropTypeAlreadyPresent = data.indexOf(importState) !== -1;
+
+    if (!isPropTypeUsed || isPropTypeAlreadyPresent) {
+      return;
+    }
+
     let newData = (typeof data === 'string') ? data.replace(es6PropTypeJust, '') : data;
     newData = newData.replace(es6PropTypeLeft, '');
-    newData = newData.replace(es6PropTypeRight, '}');
+    newData = newData.replace(es6PropTypeRight, ' }');
     newData = (typeof newData === 'string') ? newData.replace(reactProto, 'PropTypes.') : newData;
     newData = (typeof newData === 'string') ? [ newData.slice(0, newData.indexOf('\';\n') + 2), importState, newData.slice(newData.indexOf('\';\n') + 2) ].join('') : newData;
     newData ? writeFile(fileAndPath, newData, fileEncoding, (err) => {
@@ -63,6 +70,7 @@ const writeFileAsyncEs6 = (fileAndPath) => {
       }
     }) : null;
   });
+  console.log(`${chalk.magenta.italic(fileAndPath)} just got ${chalk.green('updated')}!`);
 };
 
 /**
@@ -120,7 +128,6 @@ const updateFile = (cmd, fileAndPath) => {
     });
   }
   writeFileAsyncEs6(fileAndPath);
-  console.log(`${chalk.magenta.italic(fileAndPath)} just got ${chalk.green('updated')}!`);
   (cmd !== 'updateFolder') ? console.log(`Thank you for using the package, if you like it, do ${chalk.red.bold('star')} it`) : null;
 };
 
@@ -130,6 +137,7 @@ const updateFile = (cmd, fileAndPath) => {
  * @param {string} folderName
  */
 const updateFolder = (cmd, folderName) => {
+  console.log('');
   readdir(folderName, (err, files) => {
     if (err) {
       console.log(`error : ${err}`);
