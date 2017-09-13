@@ -121,9 +121,7 @@ const updateFile = (cmd, fileAndPath) => {
   }
   writeFileAsyncEs6(fileAndPath);
   console.log(`${chalk.magenta.italic(fileAndPath)} just got ${chalk.green('updated')}!`);
-  (cmd !== 'updateFolder') ? console.log(`Thank you for using the package, if you like it, do ${chalk.red.bold('star')} it`);
-:
-  null;
+  (cmd !== 'updateFolder') ? console.log(`Thank you for using the package, if you like it, do ${chalk.red.bold('star')} it`) : null;
 };
 
 /**
