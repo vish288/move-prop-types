@@ -33,7 +33,7 @@
     "test": "node index.js -I -F test",
     "start": "",
     "dev": "nodemon index.js \"-P test/index.js\"",
-    "prod": "",
+    "patch-release": "npm version patch && npm publish && git push --follow-tags",
     "lint": "eslint src index.js > eslint_$(date +\"%d%m%Y\").log",
     "clean": "rimraf *.log build"
   },
