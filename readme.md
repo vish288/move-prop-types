@@ -26,15 +26,16 @@ The movement of prop-types from `react` to `prop-types` is as mundane a task pos
 
 To install globally, run
 
-    ` npm i -g move-prop-types `
+    npm i -g move-prop-types 
 
 and now you should be able to run the package via `move-prop-types` or `mpt` and for single files by invoking
 
-    `mpt -P <folder>/<filename>.<ext>`
+    mpt -P <folder>/<filename>.<ext>
 
 ,currently supports usage on .js or .jsx files. For folder level usage, try using 
 
-    `mpt -F <folder>`
+    mpt -F <folder>
+    
 If you feel lazy and lucky, try using `-I` in the command and we install `prop-types` for you in your project for you. :)
 
 ## Issues
