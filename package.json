@@ -22,8 +22,8 @@
     "test": "test"
   },
   "bin": {
-    "move-prop-types": "index",
-    "mpt": "index"
+    "move-prop-types": "./index.js",
+    "mpt": "./index.js"
   },
   "preferGlobal": true,
   "engines": {
