@@ -2,7 +2,8 @@
   "name": "move-prop-types",
   "version": "0.1.6",
   "description": "\"Help quickly replace the prop type checker in older react projects to map to prop-types\"",
-  "main": "index.js",
+  "main": "src/core.js",
+  "modules": "",
   "keywords": [
     "npm",
     "prop-types",
@@ -22,8 +23,8 @@
     "test": "test"
   },
   "bin": {
-    "move-prop-types": "./index.js",
-    "mpt": "./index.js"
+    "move-prop-types": "./src/core.js",
+    "mpt": "./src/core.js"
   },
   "preferGlobal": true,
   "engines": {
@@ -31,11 +32,10 @@
   },
   "scripts": {
     "test": "node index.js -I -F test",
-    "start": "",
     "dev": "nodemon index.js \"-P test/index.js\"",
-    "patch-release": "npm version patch && npm publish",
+    "patch-publish": "npm version patch && npm publish",
     "tag": "git push --follow-tags",
-    "tag-release": "npm run patch-release && npm run tag",
+    "tag-release": "npm run patch-publish && npm run tag",
     "lint": "eslint src index.js > eslint_$(date +\"%d%m%Y\").log",
     "clean": "rimraf *.log build"
   },
@@ -43,8 +43,7 @@
   "license": "MIT",
   "dependencies": {
     "chalk": "^2.1.0",
-    "commander": "^2.11.0",
-    "prop-types": "^15.5.10"
+    "commander": "^2.11.0"
   },
   "devDependencies": {
     "babel-eslint": "^7.2.3",
