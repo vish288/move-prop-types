@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node index.js -I -F test",
     "start": "",
     "dev": "nodemon index.js \"-P test/index.js\"",
     "prod": "",
@@ -18,7 +18,8 @@
   "license": "MIT",
   "dependencies": {
     "chalk": "^2.1.0",
-    "commander": "^2.11.0"
+    "commander": "^2.11.0",
+    "prop-types": "^15.5.10"
   },
   "devDependencies": {
     "babel-eslint": "^7.2.3",
