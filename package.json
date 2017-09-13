@@ -33,7 +33,8 @@
   "scripts": {
     "test": "node build/mpt.js -I -F test",
     "postinstall": "npm run build",
-    "build": "rollup -c",
+    "build": "rollup -c ",
+    "postbuild": "node src/updateFile.js build/mpt.js",
     "dev": "nodemon index.js \"-P test/index.js\"",
     "patch-publish": "npm version patch && npm publish",
     "tag": "git push --follow-tags",
