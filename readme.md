@@ -49,5 +49,5 @@ Please do share your comments as well comments and do raise issues for any speci
 
 
 ## License
-Prop-replace is released under MIT license.
+move-prop-types is released under MIT license.
 [LICENSE](LICENSE)
