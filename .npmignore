@@ -12,6 +12,9 @@ node_modules
 log
 *.log
 *.lock
+.*
+*.md
+*.config.js
 
 # Source files
 src
