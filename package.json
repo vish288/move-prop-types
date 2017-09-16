@@ -45,24 +45,25 @@
   "author": "Visweshwaran S",
   "license": "MIT",
   "dependencies": {
-    "babel-core": "^6.26.0",
-    "babel-preset-es2015-rollup": "^3.0.0",
-    "babel-preset-stage-0": "^6.24.1",
     "chalk": "^2.1.0",
     "commander": "^2.11.0",
+    "prop-types": "^15.5.10"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-eslint": "^8.0.0",
+    "babel-preset-stage-0": "^6.24.1",
+    "babel-preset-es2015-rollup": "^3.0.0",
+    "babel-preset-es2015": "^6.24.1",
+    "eslint": "^4.7.0",
+    "nodemon": "^1.12.1",
+    "rimraf": "^2.6.2",
     "rollup": "^0.49.3",
     "rollup-plugin-babel": "^3.0.2",
     "rollup-plugin-json": "^2.3.0",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-globals": "^1.1.0",
     "rollup-plugin-node-resolve": "^3.0.0"
-  },
-  "devDependencies": {
-    "babel-eslint": "^8.0.0",
-    "babel-preset-es2015": "^6.24.1",
-    "eslint": "^4.6.1",
-    "nodemon": "^1.12.0",
-    "rimraf": "^2.6.2"
   },
   "repository": "https://github.com/vichu1988/move-prop-types.git"
 }
