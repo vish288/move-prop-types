@@ -1,16 +1,17 @@
 # generic
-test
+test-files
 node_modules
 
 # IDE specific
 .idea
+.vscode
 *.codekit
 .DS_Store
 
-#logs + lock files.
+# logs + lock files.
 log
 *.log
 *.lock
-.*
 
-
+# Source files
+src

@@ -1,6 +1,6 @@
 # generic
-build
 node_modules
+test-files
 
 # IDE specific
 .idea
@@ -11,3 +11,4 @@ node_modules
 log
 *.log
 *.lock
+*-lock.json
