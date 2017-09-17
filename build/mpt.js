@@ -236,7 +236,7 @@ var process$1 = {
   uptime: uptime
 };
 
-var version$1 = "0.4.3";
+var version$1 = "0.5.4";
 
 var es6PropTypeJust = /,\s?{\sPropTypes\s}/g;
 var es6PropTypeRight = /,\s?PropTypes\s?}/g;
@@ -290,7 +290,6 @@ var installPackage = function installPackage() {
       console.log('');
     });
   }
-  console.groupEnd();
 };
 
 /**

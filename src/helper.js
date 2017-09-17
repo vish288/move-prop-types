@@ -37,7 +37,6 @@ export const installPackage = () => {
       console.log('');
     });
   }
-  console.groupEnd();
 };
 
 /**
