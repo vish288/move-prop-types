@@ -31,7 +31,7 @@
     "node": ">=0.12"
   },
   "scripts": {
-    "test": "mpt -I -F test-files",
+    "test": "node build/mpt.js -I -F test-files",
     "post-install": "npm run build",
     "build": "rollup -c ",
     "postbuild": "node src/updateFile.js build/mpt.js",
