@@ -1,11 +1,12 @@
 # move-prop-types
+
 [![Build Status](https://travis-ci.org/vichu1988/move-prop-types.svg?branch=master)](https://travis-ci.org/vichu1988/move-prop-types)
 
 Simple way to refactor your code to use the new prop-types package that has been separated out of the core react package.
 
 ## Why
 
-I was helping with a couple of humongous projects to audit and clean up the code and that was the n-th time i saw a project started about an year ago or so where prop type check was still done from React core package.
+I was working with few projects to audit and that was the n-th time i saw a project started about an year ago or so, where prop type check was still done from React core package.
 The movement of prop-types from `react` to `prop-types` is as mundane a task possible and that was a reason to write a simpler way of getting the code updated.
 
 ## Usage
