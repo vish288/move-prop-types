@@ -1,0 +1,71 @@
+{
+  "name": "move-prop-types",
+  "version": "0.5.6",
+  "description": "\"Help quickly replace the prop type checker in older react projects to map to prop-types\"",
+  "main": "index.js",
+  "modules": "",
+  "keywords": [
+    "npm",
+    "prop-types",
+    "react",
+    "prop to own",
+    "discover",
+    "updates",
+    "upgrades",
+    "dependencies",
+    "package.json",
+    "updater",
+    "version",
+    "management",
+    "mpt"
+  ],
+  "directories": {
+    "test": "test"
+  },
+  "bin": {
+    "move-prop-types": "./build/mpt.js",
+    "mpt": "./build/mpt.js"
+  },
+  "preferGlobal": true,
+  "engines": {
+    "node": ">=0.12"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 0",
+    "test-blob": "node build/mpt.js -I -F test-files",
+    "post-install": "npm run build",
+    "build": "rollup -c ",
+    "postbuild": "node src/updateFile.js build/mpt.js",
+    "dev": "nodemon index.js \"-P test/index.js\"",
+    "patch-publish": "npm version patch && npm publish",
+    "tag": "git push --follow-tags",
+    "tag-release": "npm run patch-publish && npm run tag",
+    "lint": "eslint src index.js > eslint_$(date +\"%d%m%Y\").log",
+    "clean": "rimraf *.log build"
+  },
+  "author": "Visweshwaran S",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^2.3.0",
+    "commander": "^2.12.2"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-eslint": "^8.0.3",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-es2015-rollup": "^3.0.0",
+    "babel-preset-stage-0": "^6.24.1",
+    "eslint": "^4.12.1",
+    "nodemon": "^1.12.1",
+    "prop-types": "^15.6.0",
+    "rimraf": "^2.6.2",
+    "rollup": "^0.50.1",
+    "rollup-plugin-babel": "^3.0.2",
+    "rollup-plugin-json": "^2.3.0",
+    "rollup-plugin-node-builtins": "^2.1.2",
+    "rollup-plugin-node-globals": "^1.1.0",
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-plugin-uglify": "^2.0.1"
+  },
+  "repository": "https://github.com/vichu1988/move-prop-types.git"
+}
