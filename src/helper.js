@@ -144,7 +144,6 @@ export const updateFolder = (cmd, folderName) => {
       updateFile('updateFolder', `${folderName}/${file}`);
     });
     console.log('');
-    console.log('\\033[2J');
     console.log(`folder ${chalk.underline.yellowBright(folderName)} and js/jsx files inside are now ${chalk.greenBright('ready')}!`);
     console.log('');
     console.log(`Thank you for using ${chalk.bgGreen.white.italic('move-prop-types')}.`);
