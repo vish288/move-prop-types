@@ -20,7 +20,7 @@
     "mpt"
   ],
   "directories": {
-    "test": "test"
+    "test-files": "test-files"
   },
   "bin": {
     "move-prop-types": "./build/mpt.js",
