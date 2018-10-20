@@ -33,8 +33,6 @@ export const installPackage = () => {
       console.log('');
       console.log(`${chalk.cyan.underline.bold('prop-types')} is now installed`);
       console.log('');
-      console.log(`Thank you for using the package, if you like it, do ${chalk.red.bold('star')} the repo`);
-      console.log('');
     });
   }
 };
@@ -124,7 +122,6 @@ export const updateFile = (cmd, fileAndPath) => {
     });
   }
   writeFileAsyncEs6(fileAndPath);
-  (cmd !== 'updateFolder') ? console.log(`Thank you for using the package, if you like it, do ${chalk.red.bold('star')} the repo`) : null;
 };
 
 /**
@@ -147,8 +144,10 @@ export const updateFolder = (cmd, folderName) => {
       updateFile('updateFolder', `${folderName}/${file}`);
     });
     console.log('');
+    console.log('\\033[2J');
     console.log(`folder ${chalk.underline.yellowBright(folderName)} and js/jsx files inside are now ${chalk.greenBright('ready')}!`);
     console.log('');
+    console.log(`Thank you for using ${chalk.bgGreen.white.italic('move-prop-types')}.`);
     console.log(`Thank you for using the package, if you like it, do ${chalk.red.bold('star')} the repo`);
     console.log('');
   });
