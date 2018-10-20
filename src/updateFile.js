@@ -8,6 +8,8 @@ fs.readFile(fileName, 'utf-8', function (err, data) {
   const result = `#!/usr/bin/env node \n${data}`;
 
   fs.writeFile(fileName, result, 'utf8', function (err) {
-    if (err) return console.log(err);
+    if (err) {
+      return console.log(err);
+    }
   });
 });

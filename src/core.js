@@ -23,7 +23,7 @@ propReplace
   .alias('mpt')
   .usage('[options] [file|folder]')
   .version(`${version}`)
-  .option('-I, --install', 'install the latest proptypes and then continue with rest of the commands', installPackage, { cmd: process.argv })
+  .option('-I, --install', 'install the latest prop-types package and then continue with rest of the commands', installPackage, { cmd: process.argv })
   .option('-P, --path', 'input path information of the file to update', updateFile, filePath)
   .option('-F, --folder', 'input folder info where all the files would be updated', updateFolder, folderPath)
   .on('--help , -H', helpExamples)
