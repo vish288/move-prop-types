@@ -18,7 +18,7 @@ The movement of prop-types from `react` to `prop-types` is as mundane a task pos
      Options:
    
        -V, --version  output the version number
-       -I, --install  install the latest proptypes and then continue with rest of the commands
+       -I, --install  install the latest prop-types package and then continue with rest of the commands
        -P, --path     input path information of the file to update
        -F, --folder   input folder info where all the files would be updated
        -h, --help     output usage information
