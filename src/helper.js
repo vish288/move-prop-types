@@ -2,6 +2,7 @@
  * Module dependencies
  */
 import chalk from 'chalk';
+import { stdout } from 'process';
 import { es6PropTypeJust, es6PropTypeLeft, es6PropTypeRight, fileEncoding, importState, reactProto } from './constants';
 
 const { lstatSync, readdir, readFile, stat, writeFile } = require('fs');
@@ -17,7 +18,6 @@ export const installPackage = () => {
     // Check if the package is installed in the project
     require.resolve('prop-types');
     console.log(`${chalk.cyan.underline.bold('prop-types')} is already installed in your project`);
-    console.log('');
   } catch (e) {
     console.log('Installing prop-types to your project');
     exec('npm i --color=always prop-types -S', (err, stdout, stderr) => {
@@ -30,9 +30,7 @@ export const installPackage = () => {
       // the *entire* stdout (buffered)
       console.log(`${chalk.hex('#FF6347').bold('Installation underway')}`);
       console.log(stdout);
-      console.log('');
       console.log(`${chalk.cyan.underline.bold('prop-types')} is now installed`);
-      console.log('');
     });
   }
 };
@@ -145,10 +143,9 @@ export const updateFolder = (cmd, folderName) => {
     });
     console.log('');
     console.log(`folder ${chalk.underline.yellowBright(folderName)} and js/jsx files inside are now ${chalk.greenBright('ready')}!`);
-    console.log('');
-    console.log(`Thank you for using ${chalk.bgGreen.white.italic('move-prop-types')}.`);
-    console.log(`Thank you for using the package, if you like it, do ${chalk.red.bold('star')} the repo`);
-    console.log('');
+    stdout.write('\x1b[2J');
+    stdout.write('\x1b[0f');
+    console.log(`Your folder and files have been updated.Thank you for using ${chalk.yellowBright('move-prop-types')}`);
   });
 };
 

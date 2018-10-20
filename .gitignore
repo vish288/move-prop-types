@@ -1,6 +1,6 @@
 # generic
 node_modules
-test-files
+test
 
 # IDE specific
 .idea
