@@ -12,3 +12,6 @@ log
 *.log
 *.lock
 *-lock.json
+
+# Build files
+build
