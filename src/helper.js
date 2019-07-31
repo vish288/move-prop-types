@@ -79,7 +79,6 @@ const writeFileAsyncEs5 = (fileAndPath) => {
     newData = (typeof newData === 'string') ? newData.replace(/const PropTypes = require('react').PropTypes;$/, '') : newData;
     newData = (typeof newData === 'string') ? newData.replace(/{PropTypes} = require('react').PropTypes/, '') : newData;
     newData = (typeof newData === 'string') ? [newData.slice(0, newData.indexOf('\';\n') + 2), importState, newData.slice(newData.indexOf('\';\n') + 2)].join('') : newData;
-
     newData ? writeFile(fileAndPath, newData, fileEncoding, (err) => {
       if (err) {
         throw err;
