@@ -1,7 +1,7 @@
 language: node_js
 node_js:
   - lts/*
-    # re-enable the test when you push them
-  script:
+# re-enable the test when you push them
+script:
   - npm build
   - npm test
