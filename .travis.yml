@@ -3,5 +3,5 @@ node_js:
   - lts/*
 # re-enable the test when you push them
 script:
-  - npm build
+  - npm run build
   - npm test
