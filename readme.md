@@ -1,6 +1,6 @@
 # move-prop-types
 
-[![Build Status](https://travis-ci.org/vichu1988/move-prop-types.svg?branch=master)](https://travis-ci.org/vichu1988/move-prop-types)
+[![Build Status](https://travis-ci.org/vish1988/move-prop-types.svg?branch=master)](https://travis-ci.org/vish1988/move-prop-types)
 
 Simple way to refactor your code to use the new prop-types package that has been separated out of the core react package.
 
