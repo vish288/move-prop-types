@@ -73,7 +73,7 @@
     "nodemon": "^1.19.1",
     "prop-types": "^15.7.2",
     "rimraf": "^2.6.3",
-    "rollup": "^1.17.0",
+    "rollup": "^2.79.2",
     "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-json": "^4.0.0",
     "rollup-plugin-node-builtins": "^2.1.2",
