@@ -10,9 +10,8 @@
  */
 
 import { parse } from '@babel/parser';
-import traverse from '@babel/traverse';
+import traverse, { type NodePath } from '@babel/traverse';
 import generate from '@babel/generator';
-import type { NodePath } from '@babel/traverse';
 import * as t from '@babel/types';
 
 interface TransformationResult {
