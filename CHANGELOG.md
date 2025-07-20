@@ -1,3 +1,31 @@
+# [1.0.0](https://github.com/vish288/move-prop-types/compare/v0.8.3...v1.0.0) (2025-07-20)
+
+
+### Bug Fixes
+
+* add back semantic-release dependencies for GitHub Actions ([7c1ccf1](https://github.com/vish288/move-prop-types/commit/7c1ccf19f875b0389e0f7d8de52a7756fd6a8238))
+* add support for PropTypes in middle of import list and fix integration tests ([7075be0](https://github.com/vish288/move-prop-types/commit/7075be08076d207cbdd9588611d7a6b7a5971f61))
+* correct workflow step order in release.yml - build before tests ([4bde4be](https://github.com/vish288/move-prop-types/commit/4bde4bea579e579dd5afb6945c9f8581d59745de))
+* optimize regex patterns and resolve configuration issues ([bf5428e](https://github.com/vish288/move-prop-types/commit/bf5428e59d812cae64ef76bedd03f0743e535afc))
+* resolve duplicate import ESLint error in ast-transformer ([a3b04bc](https://github.com/vish288/move-prop-types/commit/a3b04bc4d8bb4a7997c35341fb9823c54be1fba5))
+* resolve ESLint warnings and unused variable issues ([0de190e](https://github.com/vish288/move-prop-types/commit/0de190e1e6211409cf6647d210579b1d051131df))
+* resolve test failures and improve CI reliability ([aa3c2bf](https://github.com/vish288/move-prop-types/commit/aa3c2bf65c763b413702c30eec50c5b8150ac784))
+* temporarily disable npm publishing in semantic-release ([263e49c](https://github.com/vish288/move-prop-types/commit/263e49c1b6b04772b31d0e4193a0306d6a2509ed))
+
+
+### Features
+
+* add modern release tooling, comprehensive changelog, and enhanced documentation ([04ca446](https://github.com/vish288/move-prop-types/commit/04ca446e36ecf785d723075d96b53b04597700fa))
+* add verification infrastructure and fix test execution ([3497472](https://github.com/vish288/move-prop-types/commit/3497472f07a5590b72bc73201509e586dae5bf8e))
+* **ast:** implement experimental AST-based transformation ([cf57ad6](https://github.com/vish288/move-prop-types/commit/cf57ad61cf13f22c3fec4d30115f5b21db5e79dc))
+* modernize testing infrastructure to TypeScript and remove build dependencies ([15f63cb](https://github.com/vish288/move-prop-types/commit/15f63cb8a067cd73082b10c490014cd0eeb9e68a))
+* **typescript:** add support for .ts and .tsx file extensions ([bc45611](https://github.com/vish288/move-prop-types/commit/bc456119bd52d29c6d55e7ec308403b0ad7acef4))
+
+
+### BREAKING CHANGES
+
+* **typescript:** Tool now processes TypeScript files in addition to JavaScript files
+
 # Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
