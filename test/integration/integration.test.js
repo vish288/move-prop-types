@@ -157,7 +157,7 @@ const Button = ({ onClick }) => <button onClick={onClick}>Click</button>;
 Button.propTypes = { onClick: React.PropTypes.func };
 export default Button;`,
         
-        'utils/helpers.js': `// This file should be skipped as it doesn't contain PropTypes
+        'utils/helpers.js': `// This file should be skipped as it doesn't use React prop validation
 export const formatDate = (date) => date.toISOString();`,
         
         'components/Form/Input.jsx': `import React, { PropTypes } from 'react';
@@ -195,7 +195,8 @@ export default Input;`
       // Helper file should remain unchanged
       const helperContent = await fs.readFile(path.join(testDir, 'utils/helpers.js'), 'utf-8');
       expect(helperContent).toContain('formatDate');
-      expect(helperContent).not.toContain('PropTypes');
+      expect(helperContent).not.toContain("import PropTypes from 'prop-types';");
+      expect(helperContent).toContain('This file should be skipped');
     });
   });
 

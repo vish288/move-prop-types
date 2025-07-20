@@ -3,6 +3,7 @@ import {
   es6PropTypeJust,
   es6PropTypeRight,
   es6PropTypeLeft,
+  es6PropTypeMiddle,
   fileEncoding,
   importState,
   reactProto,
@@ -38,6 +39,16 @@ describe('constants.ts', () => {
       es6PropTypeLeft.lastIndex = 0; // Reset before second test
       const text2 = 'import React, { PropTypes , Component } from "react";';
       expect(es6PropTypeLeft.test(text2)).toBe(true);
+    });
+
+    it('should match es6PropTypeMiddle pattern', () => {
+      es6PropTypeMiddle.lastIndex = 0; // Reset global regex state
+      const text = 'import React, { Component, PropTypes, useState } from "react";';
+      expect(es6PropTypeMiddle.test(text)).toBe(true);
+      
+      es6PropTypeMiddle.lastIndex = 0; // Reset before second test
+      const text2 = 'import React, { Component , PropTypes , useState } from "react";';
+      expect(es6PropTypeMiddle.test(text2)).toBe(true);
     });
 
     it('should match reactProto pattern', () => {
@@ -76,6 +87,13 @@ describe('constants.ts', () => {
       // Apply the same cleanup that helper.ts does
       result = result.replace(/import React, \{\s+([^}]+)\s+\}/g, 'import React, { $1 }');
       expect(result).toBe('import React, { Component } from "react";');
+    });
+
+    it('should correctly replace es6PropTypeMiddle', () => {
+      es6PropTypeMiddle.lastIndex = 0; // Reset global regex state
+      const text = 'import React, { Component, PropTypes, useState } from "react";';
+      const result = text.replace(es6PropTypeMiddle, ',');
+      expect(result).toBe('import React, { Component, useState } from "react";');
     });
 
     it('should correctly replace es6PropTypeRight', () => {
@@ -117,6 +135,17 @@ Component.propTypes = {
       expect(text).toContain('PropTypes.string');
       expect(text).toContain('PropTypes.number');
       expect(text).not.toContain('React.PropTypes');
+    });
+
+    it('should handle mixed import transformations', () => {
+      es6PropTypeMiddle.lastIndex = 0; // Reset global regex state
+      let text = 'import React, { Component, PropTypes, useState } from "react";';
+      
+      // Apply es6PropTypeMiddle transformation
+      text = text.replace(es6PropTypeMiddle, ',');
+      // Apply cleanup that helper.ts does
+      text = text.replace(/import React, \{\s+([^}]+)\s+\}/g, 'import React, { $1 }');
+      expect(text).toBe('import React, { Component, useState } from "react";');
     });
   });
 });
