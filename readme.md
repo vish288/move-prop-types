@@ -4,7 +4,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A modern, TypeScript-based CLI tool that automatically refactors your React codebase to use the standalone `prop-types` package instead of the deprecated `React.PropTypes`.
+A modern, TypeScript-based CLI tool that automatically refactors your React codebase to use the standalone `prop-types` package instead of the deprecated `React.PropTypes`. Supports JavaScript, JSX, TypeScript, and TSX files with robust transformation capabilities.
 
 ## 🚀 Why move-prop-types?
 
@@ -19,6 +19,8 @@ This CLI tool automates the migration process by:
 - ✅ **Handling complex nested patterns** - Supports complex PropTypes like `PropTypes.arrayOf(PropTypes.shape(...))`
 - ✅ **Processing entire codebases** - Recursively processes directories and subdirectories
 - ✅ **Installing dependencies** - Optionally installs the `prop-types` package automatically
+- ✅ **TypeScript & JSX Support** - Works with .js, .jsx, .ts, and .tsx files
+- ✅ **Advanced Pattern Recognition** - Handles complex import patterns and edge cases
 
 ## 📦 Installation
 
@@ -45,7 +47,7 @@ Options:
   -V, --version          output the version number
   -I, --install          install prop-types package and continue with transformation
   -P, --path <path>      transform a specific file
-  -F, --folder <folder>  transform all .js/.jsx files in a folder (recursive)
+  -F, --folder <folder>  transform all .js/.jsx/.ts/.tsx files in a folder (recursive)
   -h, --help             display help for command
 ```
 
@@ -53,24 +55,29 @@ Options:
 
 ### Transform a Single File
 ```bash
-# Transform a specific component file
+# Transform JavaScript/JSX files
 mpt -P src/components/UserProfile.jsx
+mpt -P src/utils/validators.js
+
+# Transform TypeScript/TSX files
+mpt -P src/components/UserProfile.tsx
+mpt -P src/types/PropTypes.ts
 
 # Transform with automatic prop-types installation
-mpt -I -P src/components/UserProfile.jsx
+mpt -I -P src/components/UserProfile.tsx
 
 # Transform a file with relative path
-mpt -P ./components/Header.js
+mpt -P ./components/Header.ts
 
 # Transform multiple files (run command for each)
 mpt -P src/components/Button.jsx
-mpt -P src/components/Modal.jsx
-mpt -P src/utils/validators.js
+mpt -P src/components/Modal.tsx
+mpt -P src/utils/validators.ts
 ```
 
 ### Transform an Entire Directory
 ```bash
-# Transform all .js/.jsx files in src directory recursively
+# Transform all .js/.jsx/.ts/.tsx files in src directory recursively
 mpt -F src
 
 # Transform entire project with prop-types installation
@@ -81,7 +88,7 @@ mpt -F src/components
 mpt -F src/pages
 mpt -F src/utils
 
-# Large project with automatic dependency installation
+# Large TypeScript project with automatic dependency installation
 mpt -I -F src
 ```
 
@@ -316,6 +323,66 @@ Button.defaultProps = {
 export default Button;
 ```
 
+#### TypeScript Component Migration
+**Before transformation:**
+```typescript
+import React, { FC, PropTypes } from 'react';
+
+interface MyComponentProps {
+  title: string;
+  count?: number;
+  onClick: (id: number) => void;
+}
+
+const MyComponent: FC<MyComponentProps> = ({ title, count = 0, onClick }) => {
+  return (
+    <div>
+      <h2>{title}</h2>
+      <p>Count: {count}</p>
+      <button onClick={() => onClick(count)}>Click me</button>
+    </div>
+  );
+};
+
+MyComponent.propTypes = {
+  title: React.PropTypes.string.isRequired,
+  count: React.PropTypes.number,
+  onClick: React.PropTypes.func.isRequired
+};
+
+export default MyComponent;
+```
+
+**After transformation:**
+```typescript
+import React, { FC } from 'react';
+import PropTypes from 'prop-types';
+
+interface MyComponentProps {
+  title: string;
+  count?: number;
+  onClick: (id: number) => void;
+}
+
+const MyComponent: FC<MyComponentProps> = ({ title, count = 0, onClick }) => {
+  return (
+    <div>
+      <h2>{title}</h2>
+      <p>Count: {count}</p>
+      <button onClick={() => onClick(count)}>Click me</button>
+    </div>
+  );
+};
+
+MyComponent.propTypes = {
+  title: PropTypes.string.isRequired,
+  count: PropTypes.number,
+  onClick: PropTypes.func.isRequired
+};
+
+export default MyComponent;
+```
+
 ## 🏗️ Features
 
 - **TypeScript Support**: Built with TypeScript for better reliability and type safety
@@ -325,6 +392,8 @@ export default Button;
 - **Smart Detection**: Only processes files that actually use PropTypes
 - **Safe Transformations**: Preserves existing prop-types imports
 - **Multiple Import Patterns**: Handles various React import styles
+- **TypeScript Compatibility**: Preserves TypeScript syntax, interfaces, and type annotations
+- **Advanced Pattern Detection**: Handles complex PropTypes patterns including middle-position imports
 
 ## 🧪 Development
 
@@ -354,15 +423,22 @@ pnpm run lint
 ### Project Structure
 ```
 src/
-├── core.ts          # CLI command setup and argument parsing
-├── helper.ts         # Core transformation logic
-├── constants.ts      # Regular expressions and constants
+├── core.ts           # CLI command setup and argument parsing
+├── helper.ts         # Core transformation logic with TypeScript support
+├── ast-helper.ts     # Advanced AST-based transformation (experimental)
+├── ast-transformer.ts # AST parsing and transformation utilities
+├── constants.ts      # Regular expressions and transformation patterns
 ├── types.ts          # TypeScript type definitions
 └── updateFile.ts     # Build utility for adding shebang
 
 test/
 ├── unit/            # Unit tests for individual modules
-└── integration/     # Integration tests for real-world scenarios
+│   ├── helper.test.ts
+│   ├── ast-transformer.test.ts
+│   ├── constants.test.ts
+│   └── core.test.ts
+├── integration/     # Integration tests for real-world scenarios
+└── fixtures/        # Test files for various transformation scenarios
 ```
 
 ## 🤝 Contributing
@@ -378,7 +454,7 @@ Contributions are welcome! Please feel free to submit a Pull Request. For major 
 ## 📋 Requirements
 
 - **Node.js**: Version 18 or higher
-- **File Types**: Supports `.js` and `.jsx` files
+- **File Types**: Supports `.js`, `.jsx`, `.ts`, and `.tsx` files
 - **React Versions**: Compatible with all React versions that used `React.PropTypes`
 
 ## 🐛 Issues
