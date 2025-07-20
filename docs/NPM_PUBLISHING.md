@@ -33,7 +33,7 @@ Once `NPM_TOKEN` is configured:
 ### Current Status
 
 **Unpublished versions that will be published once NPM_TOKEN is set:**
-- `v0.11.0-beta.1` (TypeScript support beta)
+- `v0.20.1-beta.1` (TypeScript support beta)
 - `v1.0.0` (stable release with TypeScript support)
 
 ### Manual Publishing
