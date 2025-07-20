@@ -152,29 +152,35 @@ export const updateFile: UpdateFileFunction = async (
 
   // Handle file extension validation
   if (/[.]/.exec(targetPath)) {
-    if (!/\S+\.jsx?$/.test(targetPath)) {
-      console.log(`Skipping ${targetPath} - not a .js or .jsx file`);
+    if (!/\S+\.(jsx?|tsx?)$/.test(targetPath)) {
+      console.log(`Skipping ${targetPath} - not a .js, .jsx, .ts, or .tsx file`);
       return;
     }
   } else {
-    // Try to find the file with .js or .jsx extension
+    // Try to find the file with .js, .jsx, .ts, or .tsx extension
     const fs = await import('fs');
     const statAsync = promisify(fs.stat);
-    try {
-      await statAsync(`${targetPath}.js`);
-      targetPath = `${targetPath}.js`;
-    } catch (err) {
+    const extensions = ['.js', '.jsx', '.ts', '.tsx'];
+    let found = false;
+    
+    for (const ext of extensions) {
       try {
-        await statAsync(`${targetPath}.jsx`);
-        targetPath = `${targetPath}.jsx`;
-      } catch (jsxErr) {
-        console.log(
-          `${chalk.magenta.italic(targetPath)} doesn't ${chalk.red.inverse(
-            'seem to exist in the given path'
-          )}`
-        );
-        return;
+        await statAsync(`${targetPath}${ext}`);
+        targetPath = `${targetPath}${ext}`;
+        found = true;
+        break;
+      } catch (err) {
+        // Continue to next extension
       }
+    }
+    
+    if (!found) {
+      console.log(
+        `${chalk.magenta.italic(targetPath)} doesn't ${chalk.red.inverse(
+          'seem to exist in the given path'
+        )} with extensions .js, .jsx, .ts, or .tsx`
+      );
+      return;
     }
   }
 
@@ -205,14 +211,18 @@ export const updateFolder: UpdateFolderFunction = async (
       (source) => !lstatSync(`${folderName}/${source}`).isDirectory()
     );
 
-    // Process files in current directory
-    for (const file of filesInFolder) {
+    // Process files in current directory (filter for supported file types)
+    const supportedFiles = filesInFolder.filter(file => 
+      /\.(jsx?|tsx?)$/.test(file)
+    );
+    
+    for (const file of supportedFiles) {
       await updateFile('updateFolder', `${folderName}/${file}`);
     }
 
     console.log('');
     console.log(
-      `folder ${chalk.underline.yellowBright(folderName)} and js/jsx files inside are now ${chalk.greenBright(
+      `folder ${chalk.underline.yellowBright(folderName)} and js/jsx/ts/tsx files inside are now ${chalk.greenBright(
         'ready'
       )}!`
     );
@@ -236,7 +246,7 @@ export const helpExamples: HelpExamplesFunction = (): string => {
   return `
   Examples:
     $ move-prop-types --help for info
-    $ move-prop-types -P ../dir1/dir2/filename.[js|jsx] - This will run replace only on the given file.
+    $ move-prop-types -P ../dir1/dir2/filename.[js|jsx|ts|tsx] - This will run replace only on the given file.
     $ move-prop-types -F ../dir1/dir2 - This will run the update for all the files inside the given directory
     $ move-prop-types -I -F ../dir1/dir2 - This will install prop-types to dependencies and run the update for all the files inside the given directory
 `;

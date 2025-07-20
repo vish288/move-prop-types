@@ -103,14 +103,14 @@ MyComponent.propTypes = {
       expect(updatedContent).not.toContain('React.PropTypes');
     });
 
-    it('should skip files that are not .js or .jsx', async () => {
+    it('should skip files that are not .js, .jsx, .ts, or .tsx', async () => {
       const txtFile = path.join(testDir, 'test.txt');
       await fs.writeFile(txtFile, 'not a js file');
       
       await updateFile('test', txtFile);
       
       expect(console.log).toHaveBeenCalledWith(
-        expect.stringContaining('not a .js or .jsx file')
+        expect.stringContaining('not a .js, .jsx, .ts, or .tsx file')
       );
       
       await fs.unlink(txtFile);
