@@ -1,1 +1,1 @@
-export { default as mpt } from './src/core';
+export { default as mpt } from './src/core.js';

@@ -1,0 +1,23 @@
+# Code owners for move-prop-types
+
+# Global ownership
+* @vish288
+
+# Source code
+/src/ @vish288
+
+# Configuration files
+/package.json @vish288
+/tsconfig.json @vish288
+/rollup.config.js @vish288
+/eslint.config.js @vish288
+
+# Documentation
+/README.md @vish288
+/LICENSE @vish288
+
+# CI/CD
+/.github/ @vish288
+
+# Tests
+/test/ @vish288
