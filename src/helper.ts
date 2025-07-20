@@ -10,6 +10,7 @@ import { promisify } from 'util';
 import {
   es6PropTypeJust,
   es6PropTypeLeft,
+  es6PropTypeMiddle,
   es6PropTypeRight,
   fileEncoding,
   importState,
@@ -68,6 +69,7 @@ const writeFileAsyncEs6 = async (fileAndPath: string): Promise<void> => {
     const isPropTypeUsed =
       es6PropTypeJust.test(dataString) ||
       es6PropTypeLeft.test(dataString) ||
+      es6PropTypeMiddle.test(dataString) ||
       es6PropTypeRight.test(dataString);
     const isPropTypeAlreadyPresent = dataString.indexOf(importState) !== -1;
 
@@ -77,6 +79,7 @@ const writeFileAsyncEs6 = async (fileAndPath: string): Promise<void> => {
 
     let newData = dataString.replace(es6PropTypeJust, '');
     newData = newData.replace(es6PropTypeLeft, '{');
+    newData = newData.replace(es6PropTypeMiddle, ',');
     newData = newData.replace(es6PropTypeRight, ' }');
 
     // Clean up any double spaces in imports
