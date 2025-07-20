@@ -66,7 +66,9 @@ const writeFileAsyncEs6 = async (fileAndPath: string): Promise<void> => {
     const data = await readFileAsync(fileAndPath, fileEncoding);
     const dataString = data.toString();
     const isPropTypeUsed =
-      es6PropTypeJust.test(dataString) || es6PropTypeLeft.test(dataString) || es6PropTypeRight.test(dataString);
+      es6PropTypeJust.test(dataString) ||
+      es6PropTypeLeft.test(dataString) ||
+      es6PropTypeRight.test(dataString);
     const isPropTypeAlreadyPresent = dataString.indexOf(importState) !== -1;
 
     if (!isPropTypeUsed || isPropTypeAlreadyPresent) {
@@ -76,18 +78,18 @@ const writeFileAsyncEs6 = async (fileAndPath: string): Promise<void> => {
     let newData = dataString.replace(es6PropTypeJust, '');
     newData = newData.replace(es6PropTypeLeft, '');
     newData = newData.replace(es6PropTypeRight, ' }');
-    
+
     // Clean up any double spaces in imports
     newData = newData.replace(/import React, \{\s+([^}]+)\s+\}/g, 'import React, { $1 }');
     newData = newData.replace(/,\s+,/g, ',');
     newData = newData.replace(/,\s+}/g, ' }');
-    
+
     newData = newData.replace(reactProto, 'PropTypes.');
-    
+
     // Find a good place to insert the import - after the first import or at the beginning
     const importRegex = /(import.*?['"].*?['"];?\n)/;
     const match = newData.match(importRegex);
-    
+
     if (match) {
       const insertPosition = newData.indexOf(match[0]) + match[0].length;
       newData = newData.slice(0, insertPosition) + importState + newData.slice(insertPosition);
@@ -134,7 +136,10 @@ const writeFileAsyncEs5 = async (fileAndPath: string): Promise<void> => {
 /**
  * Update a single file
  */
-export const updateFile: UpdateFileFunction = async (cmd: string, fileAndPath: string): Promise<void> => {
+export const updateFile: UpdateFileFunction = async (
+  cmd: string,
+  fileAndPath: string
+): Promise<void> => {
   if (!fileAndPath) {
     console.error('No file path provided');
     return;
@@ -176,15 +181,18 @@ export const updateFile: UpdateFileFunction = async (cmd: string, fileAndPath: s
 /**
  * Update all files in a folder recursively
  */
-export const updateFolder: UpdateFolderFunction = async (cmd: string, folderName: string): Promise<void> => {
+export const updateFolder: UpdateFolderFunction = async (
+  cmd: string,
+  folderName: string
+): Promise<void> => {
   console.log('');
   try {
     const files = await readdirAsync(folderName);
-    
+
     const folderInFolder = files.filter((source) =>
       lstatSync(`${folderName}/${source}`).isDirectory()
     );
-    
+
     // Process subdirectories recursively
     for (const folder of folderInFolder) {
       await updateFolder('updateFolder', `${folderName}/${folder}`);
@@ -193,7 +201,7 @@ export const updateFolder: UpdateFolderFunction = async (cmd: string, folderName
     const filesInFolder = files.filter(
       (source) => !lstatSync(`${folderName}/${source}`).isDirectory()
     );
-    
+
     // Process files in current directory
     for (const file of filesInFolder) {
       await updateFile('updateFolder', `${folderName}/${file}`);
@@ -234,17 +242,20 @@ export const helpExamples: HelpExamplesFunction = (): string => {
 /**
  * Find matching value in array
  */
-export const findMatch: FindMatchFunction = (givenValue: string[], setToMatch: string[]): string => {
+export const findMatch: FindMatchFunction = (
+  givenValue: string[],
+  setToMatch: string[]
+): string => {
   if (!Array.isArray(givenValue)) {
     return '';
   }
-  
+
   let index = 0;
   givenValue.filter((val) => {
     if (val === setToMatch[0] || val === setToMatch[1]) {
       index = givenValue.indexOf(val) + 1;
     }
   });
-  
+
   return index && index < givenValue.length ? givenValue[index] || '' : '';
 };

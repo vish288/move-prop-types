@@ -105,3 +105,7 @@ yarn.lock
 
 # Development reference (internal use only)
 best-practices.md
+
+# Project assistant configuration
+**/CLAUDE.md
+CLAUDE.md
