@@ -112,7 +112,7 @@ export const updateFile: UpdateFileFunction = async (
         targetPath = `${targetPath}${ext}`;
         found = true;
         break;
-      } catch (err) {
+      } catch {
         // Continue to next extension
       }
     }

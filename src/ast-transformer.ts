@@ -15,10 +15,11 @@ import * as generateModule from '@babel/generator';
 import type { NodePath } from '@babel/traverse';
 
 // Handle both CommonJS and ES module imports for Babel packages
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const traverseFn = (traverseModule as any).default || traverseModule;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const generateFn = (generateModule as any).default || generateModule;
 import * as t from '@babel/types';
-import type { FileEncoding } from './types.js';
 
 interface TransformationResult {
   code: string;
@@ -167,7 +168,7 @@ function transformReactPropTypesUsage(ast: t.File): boolean {
         t.isIdentifier(path.node.property, { name: 'PropTypes' })
       ) {
         // Check if this is part of a longer chain like React.PropTypes.string
-        const parent = path.parent;
+        const {parent} = path;
         if (t.isMemberExpression(parent) && parent.object === path.node) {
           // Replace React.PropTypes with just PropTypes
           path.replaceWith(t.identifier('PropTypes'));
@@ -203,7 +204,7 @@ function addPropTypesImportIfNeeded(ast: t.File, hasReactPropTypesUsage: boolean
   }
 
   // Find the best place to insert the import (after React import or at the top)
-  const program = ast.program;
+  const {program} = ast;
   let insertIndex = 0;
 
   // Look for React import to insert after it
@@ -291,7 +292,7 @@ export function needsTransformation(code: string, filename: string = 'unknown.js
     const ast = parseCode(code, filename);
     const usage = analyzePropTypesUsage(ast);
     return usage.needsTransformation;
-  } catch (error) {
+  } catch {
     // If parsing fails, fall back to conservative approach
     return false;
   }
