@@ -1,54 +1,182 @@
 # move-prop-types
 
-[![Build Status](https://travis-ci.org/vish1988/move-prop-types.svg?branch=master)](https://travis-ci.org/vish1988/move-prop-types)
+[![npm version](https://badge.fury.io/js/move-prop-types.svg)](https://badge.fury.io/js/move-prop-types)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](https://www.typescriptlang.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Simple way to refactor your code to use the new prop-types package that has been separated out of the core react package.
+A modern, TypeScript-based CLI tool that automatically refactors your React codebase to use the standalone `prop-types` package instead of the deprecated `React.PropTypes`.
 
-## Why
+## 🚀 Why move-prop-types?
 
-I was working with few projects to audit and that was the n-th time i saw a project started about an year ago or so, where prop type check was still done from React core package.
-The movement of prop-types from `react` to `prop-types` is as mundane a task possible and that was a reason to write a simpler way of getting the code updated.
+When React v15.5 was released, PropTypes was moved from the core React package to a separate `prop-types` package. This tool automates the tedious process of:
 
-## Usage
+- ✅ Removing `PropTypes` from React imports
+- ✅ Adding the standalone `prop-types` import
+- ✅ Replacing `React.PropTypes` with `PropTypes` throughout your code
+- ✅ Handling complex nested PropTypes patterns
+- ✅ Processing entire project directories recursively
 
+## 📦 Installation
+
+### Global Installation (Recommended)
 ```bash
-   Usage: move-prop-types|mpt [options] [file|folder]
-   
-   
-     Options:
-   
-       -V, --version  output the version number
-       -I, --install  install the latest prop-types package and then continue with rest of the commands
-       -P, --path     input path information of the file to update
-       -F, --folder   input folder info where all the files would be updated
-       -h, --help     output usage information
+npm install -g move-prop-types
+# or with pnpm
+pnpm add -g move-prop-types
 ```
 
-## Examples
+### Local Installation
+```bash
+npm install --save-dev move-prop-types
+# or with pnpm
+pnpm add --save-dev move-prop-types
+```
 
-To install globally, run
+## 🛠️ Usage
 
-    npm i -g move-prop-types 
+```bash
+Usage: move-prop-types|mpt [options] [file|folder]
 
-and now you should be able to run the package via `move-prop-types` or `mpt` and for single files by invoking
+Options:
+  -V, --version          output the version number
+  -I, --install          install prop-types package and continue with transformation
+  -P, --path <path>      transform a specific file
+  -F, --folder <folder>  transform all .js/.jsx files in a folder (recursive)
+  -h, --help             display help for command
+```
 
-    mpt -P <folder>/<filename>.<ext>
+## 📖 Examples
 
-,currently supports usage on .js or .jsx files. For folder level usage, try using 
+### Transform a Single File
+```bash
+# Transform a specific component file
+mpt -P src/components/UserProfile.jsx
 
-    mpt -F <folder>
-    
-If you feel lazy and lucky, try using `-I` in the command and we install `prop-types` for you in your project for you. :)
+# With automatic prop-types installation
+mpt -I -P src/components/UserProfile.jsx
+```
 
-## Issues
-Please do share your comments as well comments and do raise issues for any specific requests or bugs you face.
+### Transform an Entire Directory
+```bash
+# Transform all .js/.jsx files in src directory recursively
+mpt -F src
 
-### Backlog
-* test cases for the code
-* implement es5 support
-* refactor code in a more efficient way.
+# Transform with prop-types installation
+mpt -I -F src
+```
 
+### Before and After
 
-## License
-move-prop-types is released under MIT license.
-[LICENSE](LICENSE)
+**Before transformation:**
+```javascript
+import React, { Component, PropTypes } from 'react';
+
+class UserProfile extends Component {
+  render() {
+    return <div>{this.props.name}</div>;
+  }
+}
+
+UserProfile.propTypes = {
+  name: React.PropTypes.string.isRequired,
+  age: React.PropTypes.number,
+  interests: React.PropTypes.arrayOf(React.PropTypes.string)
+};
+```
+
+**After transformation:**
+```javascript
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+
+class UserProfile extends Component {
+  render() {
+    return <div>{this.props.name}</div>;
+  }
+}
+
+UserProfile.propTypes = {
+  name: PropTypes.string.isRequired,
+  age: PropTypes.number,
+  interests: PropTypes.arrayOf(PropTypes.string)
+};
+```
+
+## 🏗️ Features
+
+- **TypeScript Support**: Built with TypeScript for better reliability and type safety
+- **Modern Tooling**: Uses latest ESLint, Prettier, and build tools
+- **Comprehensive Testing**: Full test suite with unit and integration tests
+- **Recursive Processing**: Handles entire directory structures
+- **Smart Detection**: Only processes files that actually use PropTypes
+- **Safe Transformations**: Preserves existing prop-types imports
+- **Multiple Import Patterns**: Handles various React import styles
+
+## 🧪 Development
+
+### Prerequisites
+- Node.js 18+
+- pnpm (recommended) or npm
+
+### Setup
+```bash
+# Clone the repository
+git clone https://github.com/vish288/move-prop-types.git
+cd move-prop-types
+
+# Install dependencies
+pnpm install
+
+# Build the project
+pnpm run build
+
+# Run tests
+pnpm test
+
+# Run linting
+pnpm run lint
+```
+
+### Project Structure
+```
+src/
+├── core.ts          # CLI command setup and argument parsing
+├── helper.ts         # Core transformation logic
+├── constants.ts      # Regular expressions and constants
+├── types.ts          # TypeScript type definitions
+└── updateFile.ts     # Build utility for adding shebang
+
+test/
+├── unit/            # Unit tests for individual modules
+└── integration/     # Integration tests for real-world scenarios
+```
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📋 Requirements
+
+- **Node.js**: Version 18 or higher
+- **File Types**: Supports `.js` and `.jsx` files
+- **React Versions**: Compatible with all React versions that used `React.PropTypes`
+
+## 🐛 Issues
+
+If you encounter any issues or have feature requests, please [open an issue](https://github.com/vish288/move-prop-types/issues) on GitHub.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- React team for the smooth transition process
+- The community for feedback and contributions
+- All users who have helped improve this tool
