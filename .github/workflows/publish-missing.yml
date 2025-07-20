@@ -1,0 +1,135 @@
+name: Publish Missing Versions
+
+on:
+  # Manual trigger to publish missing versions
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Perform dry run (show what would be published)'
+        required: false
+        default: false
+        type: boolean
+  
+  # Automatically run when NPM_TOKEN is configured and there are new releases
+  schedule:
+    # Run daily at 6 AM UTC to check for missing versions
+    - cron: '0 6 * * *'
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  check-and-publish:
+    name: Check and Publish Missing Versions
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for all tags
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup GitHub CLI
+        run: |
+          if ! command -v gh &> /dev/null; then
+            echo "Installing GitHub CLI..."
+            curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+            echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+            sudo apt update
+            sudo apt install gh
+          fi
+          gh --version
+
+      - name: Check NPM Authentication
+        id: npm-auth
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -z "$NPM_TOKEN" ]; then
+            echo "npm_token_configured=false" >> $GITHUB_OUTPUT
+            echo "⚠️ NPM_TOKEN is not configured. Skipping publication."
+          else
+            echo "npm_token_configured=true" >> $GITHUB_OUTPUT
+            echo "✅ NPM_TOKEN is configured."
+          fi
+
+      - name: Run Dry Run Check
+        if: steps.npm-auth.outputs.npm_token_configured == 'true' || github.event.inputs.dry_run == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "🔍 Checking for missing versions..."
+          node scripts/publish-missing-versions.js --dry-run
+
+      - name: Install Global Dependencies
+        if: steps.npm-auth.outputs.npm_token_configured == 'true' && github.event.inputs.dry_run != 'true'
+        run: |
+          # Install dependencies needed for the script
+          npm install -g npm@latest
+
+      - name: Configure Git
+        if: steps.npm-auth.outputs.npm_token_configured == 'true' && github.event.inputs.dry_run != 'true'
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Publish Missing Versions
+        if: steps.npm-auth.outputs.npm_token_configured == 'true' && github.event.inputs.dry_run != 'true'
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "📦 Publishing missing versions to npm..."
+          node scripts/publish-missing-versions.js
+
+      - name: Create Issue on Failure
+        if: failure() && steps.npm-auth.outputs.npm_token_configured == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue create \
+            --title "❌ Failed to publish missing versions" \
+            --body "The automated publishing of missing npm versions failed. Please check the [workflow logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.
+
+          **Failed Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          **Triggered by:** ${{ github.event_name }}
+          **Time:** $(date -u)
+
+          This issue was created automatically by the publish-missing workflow." \
+            --label "automation,npm,bug" || echo "Could not create issue (might already exist)"
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## 📋 Workflow Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.npm-auth.outputs.npm_token_configured }}" == "true" ]; then
+            if [ "${{ github.event.inputs.dry_run }}" == "true" ]; then
+              echo "✅ **Dry run completed** - No actual publishing performed" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "📦 **Publication attempted** - Check logs for results" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "⚠️ **NPM_TOKEN not configured** - Set up NPM_TOKEN secret to enable publishing" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### How to configure NPM_TOKEN:" >> $GITHUB_STEP_SUMMARY
+            echo "1. Go to [npmjs.com](https://npmjs.com) → Account Settings → Access Tokens" >> $GITHUB_STEP_SUMMARY
+            echo "2. Generate new 'Automation' token with publish permissions" >> $GITHUB_STEP_SUMMARY
+            echo "3. Go to repository Settings → Secrets and variables → Actions" >> $GITHUB_STEP_SUMMARY
+            echo "4. Add new secret: \`NPM_TOKEN\` with the token value" >> $GITHUB_STEP_SUMMARY
+          fi

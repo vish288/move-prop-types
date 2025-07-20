@@ -43,6 +43,8 @@
     "monitor:watch": "node scripts/monitor-workflows.js --watch",
     "monitor:latest": "node scripts/monitor-workflows.js --latest",
     "monitor:trigger": "node scripts/monitor-workflows.js --trigger --watch",
+    "publish:missing": "node scripts/publish-missing-versions.js",
+    "publish:missing:dry": "node scripts/publish-missing-versions.js --dry-run",
     "build": "tsc && rollup -c",
     "postbuild": "node build/updateFile.js build/mpt.js",
     "dev": "nodemon src/core.ts",
