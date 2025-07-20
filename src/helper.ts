@@ -76,7 +76,7 @@ const writeFileAsyncEs6 = async (fileAndPath: string): Promise<void> => {
     }
 
     let newData = dataString.replace(es6PropTypeJust, '');
-    newData = newData.replace(es6PropTypeLeft, '');
+    newData = newData.replace(es6PropTypeLeft, '{');
     newData = newData.replace(es6PropTypeRight, ' }');
 
     // Clean up any double spaces in imports

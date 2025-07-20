@@ -41,11 +41,11 @@ jobs:
       - name: Run type checking
         run: pnpm run typecheck
 
+      - name: Build project
+        run: pnpm run build
+
       - name: Run tests
         run: pnpm run test:ci
-
-      - name: Test build
-        run: pnpm run build
 
       - name: Upload coverage
         if: matrix.node-version == 20
