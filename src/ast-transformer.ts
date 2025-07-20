@@ -10,15 +10,9 @@
  */
 
 import { parse } from '@babel/parser';
-import * as traverseModule from '@babel/traverse';
-import * as generateModule from '@babel/generator';
+import traverse from '@babel/traverse';
+import generate from '@babel/generator';
 import type { NodePath } from '@babel/traverse';
-
-// Handle both CommonJS and ES module imports for Babel packages
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const traverseFn = (traverseModule as any).default || traverseModule;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const generateFn = (generateModule as any).default || generateModule;
 import * as t from '@babel/types';
 
 interface TransformationResult {
@@ -75,7 +69,7 @@ function analyzePropTypesUsage(ast: t.File): PropTypesUsage {
   let hasES6Import = false;
   let hasReactPropTypesUsage = false;
 
-  traverseFn(ast, {
+  traverse(ast, {
     // Check for ES6 imports: import { PropTypes } from 'react'
     ImportDeclaration(path: NodePath<t.ImportDeclaration>) {
       if (
@@ -116,7 +110,7 @@ function transformES6Imports(ast: t.File): boolean {
   let modified = false;
   let hasAddedPropTypesImport = false;
 
-  traverseFn(ast, {
+  traverse(ast, {
     ImportDeclaration(path: NodePath<t.ImportDeclaration>) {
       // Handle React imports that include PropTypes
       if (path.node.source.value === 'react' || path.node.source.value === 'React') {
@@ -159,7 +153,7 @@ function transformES6Imports(ast: t.File): boolean {
 function transformReactPropTypesUsage(ast: t.File): boolean {
   let modified = false;
 
-  traverseFn(ast, {
+  traverse(ast, {
     MemberExpression(path: NodePath<t.MemberExpression>) {
       // Transform React.PropTypes.* to PropTypes.*
       if (
@@ -191,7 +185,7 @@ function addPropTypesImportIfNeeded(ast: t.File, hasReactPropTypesUsage: boolean
 
   // Check if PropTypes import already exists
   let hasExistingImport = false;
-  traverseFn(ast, {
+  traverse(ast, {
     ImportDeclaration(path: NodePath<t.ImportDeclaration>) {
       if (path.node.source.value === 'prop-types') {
         hasExistingImport = true;
@@ -263,7 +257,7 @@ export function transformWithAST(
     }
 
     // Generate the transformed code
-    const result = generateFn(ast, {
+    const result = generate(ast, {
       retainLines: false,
       compact: false,
       concise: false,
