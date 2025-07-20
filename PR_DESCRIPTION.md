@@ -2,7 +2,7 @@
 
 ## Summary
 
-This PR introduces comprehensive TypeScript support and experimental AST-based transformation capabilities to move-prop-types, marking the v0.11.0-beta.1 release.
+This PR introduces comprehensive TypeScript support and experimental AST-based transformation capabilities to move-prop-types, marking the v0.20.1-beta.1 release.
 
 ### 🚀 Key Features
 

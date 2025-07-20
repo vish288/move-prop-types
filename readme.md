@@ -456,13 +456,13 @@ Contributions are welcome! Please feel free to submit a Pull Request. For major 
 ### Current Releases
 
 - ✅ **v1.0.0** - Stable release with full TypeScript support
-- ✅ **v0.11.0-beta.1** - Beta release with TypeScript support
+- ✅ **v0.20.1-beta.1** - Beta release with TypeScript support
 - 🔄 **NPM Publishing** - Automatic publishing configured
 
 ### Missing NPM Versions
 
 The following GitHub releases are ready but not yet published to npm:
-- `v0.11.0-beta.1` (TypeScript support beta)
+- `v0.20.1-beta.1` (TypeScript support beta)
 - `v1.0.0` (stable release with TypeScript support)
 
 **These will be automatically published once the repository maintainer configures the NPM_TOKEN secret.**
