@@ -8,13 +8,17 @@ A modern, TypeScript-based CLI tool that automatically refactors your React code
 
 ## 🚀 Why move-prop-types?
 
-When React v15.5 was released, PropTypes was moved from the core React package to a separate `prop-types` package. This tool automates the tedious process of:
+When React v15.5 was released in 2017, PropTypes was deprecated from the core React package and moved to a separate `prop-types` package. Many legacy React projects still use the old `React.PropTypes` syntax, which is no longer supported in modern React versions.
 
-- ✅ Removing `PropTypes` from React imports
-- ✅ Adding the standalone `prop-types` import
-- ✅ Replacing `React.PropTypes` with `PropTypes` throughout your code
-- ✅ Handling complex nested PropTypes patterns
-- ✅ Processing entire project directories recursively
+This CLI tool automates the migration process by:
+
+- ✅ **Detecting legacy PropTypes usage** - Scans for `React.PropTypes` patterns
+- ✅ **Removing PropTypes from React imports** - Cleans up `import { PropTypes }` from React
+- ✅ **Adding standalone prop-types import** - Adds `import PropTypes from 'prop-types'`
+- ✅ **Replacing usage patterns** - Changes `React.PropTypes.string` to `PropTypes.string`
+- ✅ **Handling complex nested patterns** - Supports complex PropTypes like `PropTypes.arrayOf(PropTypes.shape(...))`
+- ✅ **Processing entire codebases** - Recursively processes directories and subdirectories
+- ✅ **Installing dependencies** - Optionally installs the `prop-types` package automatically
 
 ## 📦 Installation
 
@@ -52,8 +56,16 @@ Options:
 # Transform a specific component file
 mpt -P src/components/UserProfile.jsx
 
-# With automatic prop-types installation
+# Transform with automatic prop-types installation
 mpt -I -P src/components/UserProfile.jsx
+
+# Transform a file with relative path
+mpt -P ./components/Header.js
+
+# Transform multiple files (run command for each)
+mpt -P src/components/Button.jsx
+mpt -P src/components/Modal.jsx
+mpt -P src/utils/validators.js
 ```
 
 ### Transform an Entire Directory
@@ -61,27 +73,79 @@ mpt -I -P src/components/UserProfile.jsx
 # Transform all .js/.jsx files in src directory recursively
 mpt -F src
 
-# Transform with prop-types installation
+# Transform entire project with prop-types installation
+mpt -I -F .
+
+# Transform specific subdirectories
+mpt -F src/components
+mpt -F src/pages
+mpt -F src/utils
+
+# Large project with automatic dependency installation
 mpt -I -F src
 ```
 
-### Before and After
+### Real-World Migration Scenarios
 
+#### Legacy React Project
+```bash
+# 1. Install move-prop-types globally
+npm install -g move-prop-types
+
+# 2. Navigate to your React project
+cd my-react-project
+
+# 3. Install prop-types and transform entire codebase
+mpt -I -F src
+
+# 4. Verify changes and test your application
+npm test
+```
+
+#### Migrating Specific Components
+```bash
+# Transform only component files
+mpt -F src/components
+
+# Transform only utility files that use PropTypes
+mpt -P src/utils/propTypeValidators.js
+mpt -P src/hoc/withPropTypes.js
+```
+
+### Before and After Examples
+
+#### Simple Component Migration
 **Before transformation:**
 ```javascript
 import React, { Component, PropTypes } from 'react';
 
 class UserProfile extends Component {
   render() {
-    return <div>{this.props.name}</div>;
+    const { name, email, age, isActive } = this.props;
+    return (
+      <div className="user-profile">
+        <h2>{name}</h2>
+        <p>Email: {email}</p>
+        <p>Age: {age}</p>
+        {isActive && <span className="active">Active User</span>}
+      </div>
+    );
   }
 }
 
 UserProfile.propTypes = {
   name: React.PropTypes.string.isRequired,
+  email: React.PropTypes.string.isRequired,
   age: React.PropTypes.number,
-  interests: React.PropTypes.arrayOf(React.PropTypes.string)
+  isActive: React.PropTypes.bool
 };
+
+UserProfile.defaultProps = {
+  age: 0,
+  isActive: false
+};
+
+export default UserProfile;
 ```
 
 **After transformation:**
@@ -91,15 +155,165 @@ import PropTypes from 'prop-types';
 
 class UserProfile extends Component {
   render() {
-    return <div>{this.props.name}</div>;
+    const { name, email, age, isActive } = this.props;
+    return (
+      <div className="user-profile">
+        <h2>{name}</h2>
+        <p>Email: {email}</p>
+        <p>Age: {age}</p>
+        {isActive && <span className="active">Active User</span>}
+      </div>
+    );
   }
 }
 
 UserProfile.propTypes = {
   name: PropTypes.string.isRequired,
+  email: PropTypes.string.isRequired,
   age: PropTypes.number,
-  interests: PropTypes.arrayOf(PropTypes.string)
+  isActive: PropTypes.bool
 };
+
+UserProfile.defaultProps = {
+  age: 0,
+  isActive: false
+};
+
+export default UserProfile;
+```
+
+#### Complex PropTypes Migration
+**Before transformation:**
+```javascript
+import React, { PropTypes } from 'react';
+
+const DataTable = ({ data, columns, onRowClick, pagination, loading }) => {
+  // Component implementation
+  return <div>DataTable Component</div>;
+};
+
+DataTable.propTypes = {
+  data: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
+  columns: React.PropTypes.arrayOf(React.PropTypes.shape({
+    key: React.PropTypes.string.isRequired,
+    title: React.PropTypes.string.isRequired,
+    render: React.PropTypes.func,
+    sortable: React.PropTypes.bool
+  })).isRequired,
+  onRowClick: React.PropTypes.func,
+  pagination: React.PropTypes.oneOfType([
+    React.PropTypes.bool,
+    React.PropTypes.shape({
+      page: React.PropTypes.number,
+      pageSize: React.PropTypes.number,
+      total: React.PropTypes.number
+    })
+  ]),
+  loading: React.PropTypes.bool
+};
+
+export default DataTable;
+```
+
+**After transformation:**
+```javascript
+import React from 'react';
+import PropTypes from 'prop-types';
+
+const DataTable = ({ data, columns, onRowClick, pagination, loading }) => {
+  // Component implementation
+  return <div>DataTable Component</div>;
+};
+
+DataTable.propTypes = {
+  data: PropTypes.arrayOf(PropTypes.object).isRequired,
+  columns: PropTypes.arrayOf(PropTypes.shape({
+    key: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    render: PropTypes.func,
+    sortable: PropTypes.bool
+  })).isRequired,
+  onRowClick: PropTypes.func,
+  pagination: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.shape({
+      page: PropTypes.number,
+      pageSize: PropTypes.number,
+      total: PropTypes.number
+    })
+  ]),
+  loading: PropTypes.bool
+};
+
+export default DataTable;
+```
+
+#### Functional Component Migration
+**Before transformation:**
+```javascript
+import React, { PropTypes } from 'react';
+
+function Button({ label, onClick, disabled, variant, size }) {
+  return (
+    <button 
+      onClick={onClick} 
+      disabled={disabled}
+      className={`btn btn-${variant} btn-${size}`}
+    >
+      {label}
+    </button>
+  );
+}
+
+Button.propTypes = {
+  label: React.PropTypes.string.isRequired,
+  onClick: React.PropTypes.func.isRequired,
+  disabled: React.PropTypes.bool,
+  variant: React.PropTypes.oneOf(['primary', 'secondary', 'danger']),
+  size: React.PropTypes.oneOf(['small', 'medium', 'large'])
+};
+
+Button.defaultProps = {
+  disabled: false,
+  variant: 'primary',
+  size: 'medium'
+};
+
+export default Button;
+```
+
+**After transformation:**
+```javascript
+import React from 'react';
+import PropTypes from 'prop-types';
+
+function Button({ label, onClick, disabled, variant, size }) {
+  return (
+    <button 
+      onClick={onClick} 
+      disabled={disabled}
+      className={`btn btn-${variant} btn-${size}`}
+    >
+      {label}
+    </button>
+  );
+}
+
+Button.propTypes = {
+  label: PropTypes.string.isRequired,
+  onClick: PropTypes.func.isRequired,
+  disabled: PropTypes.bool,
+  variant: PropTypes.oneOf(['primary', 'secondary', 'danger']),
+  size: PropTypes.oneOf(['small', 'medium', 'large'])
+};
+
+Button.defaultProps = {
+  disabled: false,
+  variant: 'primary',
+  size: 'medium'
+};
+
+export default Button;
 ```
 
 ## 🏗️ Features
