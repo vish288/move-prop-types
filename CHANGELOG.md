@@ -1,3 +1,12 @@
+# [1.1.0](https://github.com/vish288/move-prop-types/compare/v1.0.0...v1.1.0) (2025-07-20)
+
+
+### Features
+
+* add automated missing versions publisher ([b05c8b9](https://github.com/vish288/move-prop-types/commit/b05c8b9586685cfdea502d82b31f5a3f86880aef))
+* enable npm publishing in semantic-release ([a9c4496](https://github.com/vish288/move-prop-types/commit/a9c4496ab4a2e16cc874b1ff70e5575842e67795))
+* rename beta version and create historical releases ([d44de7e](https://github.com/vish288/move-prop-types/commit/d44de7edf4393722222ff0be8f743a7c3ddd4f78))
+
 # [1.0.0](https://github.com/vish288/move-prop-types/compare/v0.8.3...v1.0.0) (2025-07-20)
 
 
