@@ -22,19 +22,22 @@ describe('core.ts', () => {
   });
 
   it('should create a Command instance', async () => {
-    const core = await import('../../build/core.js');
-    expect(core.default).toBeInstanceOf(Command);
+    const { createCommand } = await import('../../src/core.js');
+    const command = createCommand();
+    expect(command).toBeInstanceOf(Command);
   });
 
   it('should have correct command name and alias', async () => {
-    const core = await import('../../build/core.js');
-    expect(core.default.name()).toBe('move-prop-types');
-    expect(core.default.alias()).toBe('mpt');
+    const { createCommand } = await import('../../src/core.js');
+    const command = createCommand();
+    expect(command.name()).toBe('move-prop-types');
+    expect(command.alias()).toBe('mpt');
   });
 
   it('should have all required options', async () => {
-    const core = await import('../../build/core.js');
-    const options = core.default.options;
+    const { createCommand } = await import('../../src/core.js');
+    const command = createCommand();
+    const options = command.options;
     
     const optionFlags = options.map(opt => opt.flags);
     expect(optionFlags).toContain('-I, --install');
@@ -43,16 +46,18 @@ describe('core.ts', () => {
   });
 
   it('should have help text configured', async () => {
-    const core = await import('../../build/core.js');
+    const { createCommand } = await import('../../src/core.js');
+    const command = createCommand();
     // Check if the command has help text by checking the helpInformation
-    const helpText = core.default.helpInformation();
+    const helpText = command.helpInformation();
     expect(helpText).toContain('move-prop-types');
     expect(helpText).toContain('Usage:');
     expect(helpText).toContain('Options:');
   });
 
   it('should set cli property to true', async () => {
-    const core = await import('../../build/core.js');
-    expect(core.default.cli).toBe(true);
+    const { createCommand } = await import('../../src/core.js');
+    const command = createCommand();
+    expect((command as any).cli).toBe(true);
   });
 });

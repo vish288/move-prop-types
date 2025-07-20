@@ -7,7 +7,7 @@ import {
   fileEncoding,
   importState,
   reactProto,
-} from '../../build/constants.js';
+} from '../../src/constants.js';
 
 describe('constants.ts', () => {
   describe('Regular Expressions', () => {

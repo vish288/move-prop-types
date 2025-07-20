@@ -1,6 +1,9 @@
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
+  esbuild: {
+    target: 'node18'
+  },
   test: {
     environment: 'node',
     // Prevent hanging by setting proper timeouts and pool configuration

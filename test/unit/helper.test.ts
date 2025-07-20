@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { promises as fs } from 'fs';
 import path from 'path';
-import { findMatch, installPackage, updateFile, updateFolder } from '../../build/helper.js';
+import { findMatch, installPackage, updateFile, updateFolder } from '../../src/helper.js';
 
 // Mock dependencies
 vi.mock('chalk', () => ({
@@ -171,7 +171,7 @@ MyComponent.propTypes = {
     afterEach(async () => {
       // Clean up test directories
       try {
-        await fs.rmdir(testDir, { recursive: true });
+        await fs.rm(testDir, { recursive: true, force: true });
       } catch (e) {
         // Directory might not exist, ignore
       }
