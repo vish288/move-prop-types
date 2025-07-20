@@ -32,10 +32,12 @@
     "node": ">=18"
   },
   "scripts": {
-    "test": "vitest",
-    "test:coverage": "vitest --coverage",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "test:ui": "vitest --ui",
     "test:ci": "vitest run",
+    "verify": "node verify/verify-transformation.js",
     "test-blob": "node build/mpt.js -F test",
     "build": "tsc && rollup -c",
     "postbuild": "node build/updateFile.js build/mpt.js",
