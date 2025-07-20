@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.11.0-beta.1] - TBD
+
+### Features
+
+* **typescript-files**: Added support for TypeScript (.ts) and TSX (.tsx) files
+* **ast-transformation**: Implemented experimental AST-based transformation with Babel
+* **file-extension-support**: Extended file type support from .js/.jsx to .js/.jsx/.ts/.tsx
+* **enhanced-pattern-detection**: Improved PropTypes detection for complex import patterns
+* **modern-testing**: Enhanced test coverage with TypeScript file transformation tests
+
+### Code Refactoring
+
+* **helper**: Extended regex-based helper to support TypeScript file extensions
+* **ast-implementation**: Created comprehensive AST-based transformation as alternative approach
+* **constants**: Added new regex patterns for middle-position PropTypes imports
+* **types**: Enhanced TypeScript definitions for better type safety
+
+### Documentation
+
+* **readme**: Updated with TypeScript examples and enhanced feature documentation
+* **typescript-examples**: Added comprehensive TypeScript component transformation examples
+* **file-support**: Updated all documentation to reflect .ts/.tsx file support
+
+### Testing
+
+* **typescript-coverage**: Added comprehensive tests for TypeScript file transformations
+* **ast-testing**: Complete test suite for AST-based transformation features
+* **integration-tests**: Enhanced real-world scenario testing with TypeScript files
+
+### Build System
+
+* **babel-dependencies**: Added Babel AST parsing dependencies for advanced transformations
+* **rollup-optimization**: Optimized bundling configuration for new dependencies
+
 ## [0.10.0](https://github.com/vish288/move-prop-types/compare/v0.8.3...v0.10.0) (2025-07-20)
 
 ### Features
