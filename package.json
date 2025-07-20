@@ -1,6 +1,6 @@
 {
   "name": "move-prop-types",
-  "version": "0.10.1",
+  "version": "0.11.0-beta.1",
   "description": "\"Help quickly replace the prop type checker in older react projects to map to prop-types\"",
   "main": "build/mpt.js",
   "types": "build/index.d.ts",

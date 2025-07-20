@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [0.11.0-beta.1] - TBD
+## [0.11.0-beta.1] - 2025-07-20
 
 ### Features
 
