@@ -5,7 +5,15 @@ import terser from '@rollup/plugin-terser';
 
 export default {
   input: 'build/cli.js',
-  external: ['commander', 'chalk', 'fs', 'util', 'process', 'child_process', 'prop-types'],
+  external: [
+    'commander', 
+    'chalk', 
+    'fs', 
+    'util', 
+    'process', 
+    'child_process', 
+    'prop-types'
+  ],
   plugins: [
     json(),
     resolve({
