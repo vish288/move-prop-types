@@ -3,7 +3,7 @@
  */
 import chalk from 'chalk';
 import { stdout } from 'process';
-import { lstatSync, readdir, readFile, stat, writeFile } from 'fs';
+import { lstatSync, readdir, readFile, writeFile } from 'fs';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 
@@ -28,7 +28,6 @@ const execAsync = promisify(exec);
 const readFileAsync = promisify(readFile);
 const writeFileAsync = promisify(writeFile);
 const readdirAsync = promisify(readdir);
-const statAsync = promisify(stat);
 
 /**
  * Install prop-types package
@@ -151,6 +150,8 @@ export const updateFile: UpdateFileFunction = async (cmd: string, fileAndPath: s
     }
   } else {
     // Try to find the file with .js or .jsx extension
+    const fs = await import('fs');
+    const statAsync = promisify(fs.stat);
     try {
       await statAsync(`${targetPath}.js`);
       targetPath = `${targetPath}.js`;

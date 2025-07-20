@@ -102,3 +102,6 @@ yarn.lock
 
 # Husky
 .husky/_
+
+# Development reference (internal use only)
+best-practices.md
