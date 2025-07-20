@@ -1,10 +1,10 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
 
+import PropTypes from 'prop-types';
 const something = () => {
   return (<div>hello world</div>);
 };
 
 something.propTypes = {
-  abc: React.PropTypes.func(),
-  bde: PropTypes.func(),
-};
+  abc: PropTypes.func(),
+  bde: PropTypes.func() };

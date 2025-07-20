@@ -15,7 +15,7 @@ if (!fileName) {
 try {
   const data: string = await readFile(fileName, 'utf-8');
   const result: string = `#!/usr/bin/env node\n${data}`;
-  
+
   await writeFile(fileName, result, 'utf8');
   console.log(`Updated ${fileName} with shebang`);
 } catch (err: unknown) {
