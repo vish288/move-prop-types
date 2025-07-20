@@ -42,11 +42,11 @@ jobs:
       - name: Run type checking
         run: pnpm run typecheck
 
-      - name: Build project
-        run: pnpm run build
-
       - name: Run tests
         run: pnpm run test:ci
+
+      - name: Build project
+        run: pnpm run build
 
   release:
     name: Release

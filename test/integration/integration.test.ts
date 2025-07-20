@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { promises as fs } from 'fs';
 import path from 'path';
-import { updateFile, updateFolder } from '../../build/helper.js';
+import { updateFile, updateFolder } from '../../src/helper.js';
 
 describe('Integration Tests', () => {
   const testDir = path.join(process.cwd(), 'test', 'fixtures', 'integration');
@@ -12,7 +12,7 @@ describe('Integration Tests', () => {
 
   afterEach(async () => {
     try {
-      await fs.rmdir(testDir, { recursive: true });
+      await fs.rm(testDir, { recursive: true, force: true });
     } catch (e) {
       // Directory might not exist, ignore
     }
