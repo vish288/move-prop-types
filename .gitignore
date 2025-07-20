@@ -30,6 +30,9 @@ coverage/
 test-results/
 .coverage/
 
+# Verification folder for manual testing
+verify/
+
 # Environment variables
 .env
 .env.local
