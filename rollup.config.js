@@ -4,7 +4,7 @@ import resolve from '@rollup/plugin-node-resolve';
 import terser from '@rollup/plugin-terser';
 
 export default {
-  input: 'build/core.js',
+  input: 'build/cli.js',
   external: ['commander', 'chalk', 'fs', 'util', 'process', 'child_process', 'prop-types'],
   plugins: [
     json(),

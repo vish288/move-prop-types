@@ -14,10 +14,15 @@ if (!fileName) {
 
 try {
   const data: string = await readFile(fileName, 'utf-8');
-  const result: string = `#!/usr/bin/env node\n${data}`;
-
-  await writeFile(fileName, result, 'utf8');
-  console.log(`Updated ${fileName} with shebang`);
+  
+  // Check if shebang already exists
+  if (data.startsWith('#!/usr/bin/env node')) {
+    console.log(`${fileName} already has shebang`);
+  } else {
+    const result: string = `#!/usr/bin/env node\n${data}`;
+    await writeFile(fileName, result, 'utf8');
+    console.log(`Updated ${fileName} with shebang`);
+  }
 } catch (err: unknown) {
   const errorMessage = err instanceof Error ? err.message : String(err);
   console.error('Error updating file:', errorMessage);

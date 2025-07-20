@@ -206,7 +206,8 @@ MyComponent.propTypes = {
       await updateFolder('test', 'non-existent-folder');
       
       expect(console.error).toHaveBeenCalledWith(
-        expect.stringContaining('Error processing folder')
+        expect.stringContaining('Error processing folder non-existent-folder:'),
+        expect.any(String)
       );
     });
   });

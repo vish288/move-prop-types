@@ -44,8 +44,11 @@ describe('core.ts', () => {
 
   it('should have help text configured', async () => {
     const core = await import('../../build/core.js');
-    // The help text should be added via addHelpText
-    expect(core.default._helpText).toBeDefined();
+    // Check if the command has help text by checking the helpInformation
+    const helpText = core.default.helpInformation();
+    expect(helpText).toContain('move-prop-types');
+    expect(helpText).toContain('Usage:');
+    expect(helpText).toContain('Options:');
   });
 
   it('should set cli property to true', async () => {
