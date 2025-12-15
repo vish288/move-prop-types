@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/vish288/move-prop-types/compare/v1.1.0...v1.1.1) (2025-12-15)
+
+
+### Bug Fixes
+
+* **security:** address 8 dependency vulnerabilities ([8f87467](https://github.com/vish288/move-prop-types/commit/8f8746725cb7c4dcfaeb67c356975e93ee436a33))
+
 # [1.2.0](https://github.com/vish288/move-prop-types/compare/v1.1.0...v1.2.0) (2025-12-15)
 
 
