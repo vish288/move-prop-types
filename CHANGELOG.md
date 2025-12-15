@@ -1,3 +1,28 @@
+# [1.2.0](https://github.com/vish288/move-prop-types/compare/v1.1.0...v1.2.0) (2025-12-15)
+
+
+### Security
+
+* fix high severity glob command injection vulnerability (GHSA-5j98-mcp5-4vw2)
+* fix moderate vite server.fs.deny bypass vulnerability (GHSA-93m4-6634-74q7)
+* fix moderate js-yaml prototype pollution vulnerability (GHSA-mh29-5h37-fv8m)
+* fix moderate @conventional-changelog/git-client argument injection (GHSA-vh25-5764-9wcr)
+* fix low @eslint/plugin-kit ReDoS vulnerability (GHSA-xffm-g5w8-qvg7)
+* fix low tmp arbitrary file write vulnerability (GHSA-52f5-9888-hmc6)
+* fix low vite middleware file serving issues (GHSA-g4jq-h2w9-997c, GHSA-jqfw-vq24-v9c3)
+
+
+### Dependencies
+
+* update rimraf to ^6.1.2 (fixes glob vulnerability)
+* update vitest to ^3.2.4 and @vitest/ui to ^3.2.4 (fixes vite vulnerabilities)
+* update eslint to ^9.28.0 (fixes js-yaml and plugin-kit vulnerabilities)
+* update @typescript-eslint/eslint-plugin and @typescript-eslint/parser to ^8.32.0
+* update typescript to ^5.8.3
+* update @babel/core, generator, parser, preset-env, traverse, types to ^7.28.5
+* update nodemon to ^3.1.11
+* add pnpm overrides for transitive dependency security fixes
+
 # [1.1.0](https://github.com/vish288/move-prop-types/compare/v1.0.0...v1.1.0) (2025-07-20)
 
 
