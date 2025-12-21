@@ -29,6 +29,8 @@ This CLI tool automates the migration process by:
 npm install -g move-prop-types
 # or with pnpm
 pnpm add -g move-prop-types
+# or with yarn
+yarn global add move-prop-types
 ```
 
 ### Local Installation
@@ -36,6 +38,8 @@ pnpm add -g move-prop-types
 npm install --save-dev move-prop-types
 # or with pnpm
 pnpm add --save-dev move-prop-types
+# or with yarn
+yarn add --dev move-prop-types
 ```
 
 ## 🛠️ Usage
