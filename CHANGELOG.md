@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/vish288/move-prop-types/compare/v1.1.1...v1.1.2) (2025-12-21)
+
+
+### Bug Fixes
+
+* **docs:** add yarn installation instructions ([5093500](https://github.com/vish288/move-prop-types/commit/50935006be783c66f26f7b1da3fe9d199f5d9165))
+
 ## [1.1.1](https://github.com/vish288/move-prop-types/compare/v1.1.0...v1.1.1) (2025-12-15)
 
 
