@@ -112,7 +112,7 @@
     "semantic-release": "^25.0.9",
     "standard-version": "^9.5.0",
     "typescript": "^5.8.3",
-    "vite": "^7.3.6",
+    "vite": "^8.3.0",
     "vitest": "^4.1.11"
   },
   "lint-staged": {
