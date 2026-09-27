@@ -1,27 +1,19 @@
 {
   "name": "move-prop-types",
   "version": "0.0.0-development",
-  "description": "\"Help quickly replace the prop type checker in older react projects to map to prop-types\"",
+  "description": "CLI that converts React.PropTypes usage to the standalone prop-types package",
   "main": "build/mpt.js",
   "type": "module",
   "keywords": [
-    "npm",
-    "prop-types",
     "react",
-    "prop to own",
-    "discover",
-    "updates",
-    "upgrades",
-    "dependencies",
-    "package.json",
-    "updater",
-    "version",
-    "management",
+    "prop-types",
+    "proptypes",
+    "react-15",
+    "codemod",
+    "migration",
+    "cli",
     "mpt"
   ],
-  "directories": {
-    "test": "test"
-  },
   "bin": {
     "move-prop-types": "build/mpt.js",
     "mpt": "build/mpt.js"
@@ -29,7 +21,6 @@
   "files": [
     "build/mpt.js"
   ],
-  "preferGlobal": true,
   "engines": {
     "node": ">=20"
   },
@@ -105,5 +96,9 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/vish288/move-prop-types.git"
+  },
+  "homepage": "https://github.com/vish288/move-prop-types#readme",
+  "bugs": {
+    "url": "https://github.com/vish288/move-prop-types/issues"
   }
 }
