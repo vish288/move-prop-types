@@ -9,13 +9,13 @@ React 15.5 moved PropTypes out of the `react` package. React 16 and later do not
 
 ## What the tool changes
 
-The tool reads `.js`, `.jsx`, `.ts` and `.tsx` files. For each file that imports `PropTypes` from `react`, the tool does these steps:
+The tool reads `.js`, `.jsx`, `.ts` and `.tsx` files. For each file that uses `React.PropTypes` or imports `PropTypes` from `react`, the tool does these steps:
 
 1. It removes `PropTypes` from the `react` import.
-2. It adds `import PropTypes from 'prop-types';`.
-3. It replaces each `React.PropTypes.` with `PropTypes.`.
+2. It adds `import PropTypes from 'prop-types';` on the line after the `react` import. In a CommonJS file, it adds `const PropTypes = require('prop-types');` after the `require('react')` line.
+3. It replaces each `React.PropTypes` with `PropTypes`.
 
-The tool does not change files that already import `prop-types`.
+The tool does not change other lines. It does not change files that already import `prop-types`.
 
 **Before:**
 
@@ -40,8 +40,8 @@ export default Greeting;
 
 ```jsx
 import React, { Component } from 'react';
-
 import PropTypes from 'prop-types';
+
 class Greeting extends Component {
   render() {
     return <h1>Hello, {this.props.name}</h1>;
@@ -50,12 +50,11 @@ class Greeting extends Component {
 
 Greeting.propTypes = {
   name: PropTypes.string.isRequired,
-  tags: PropTypes.arrayOf(PropTypes.string) };
+  tags: PropTypes.arrayOf(PropTypes.string),
+};
 
 export default Greeting;
 ```
-
-The tool does not format the code. Run your formatter (for example, Prettier) after the tool.
 
 ## Requirements
 
@@ -121,13 +120,15 @@ mpt -I -F src
 
 ## Limits
 
-- The tool changes a file only if the file imports `PropTypes` from `react`, for example `import React, { PropTypes } from 'react';`. If a file uses `React.PropTypes` and does not import `PropTypes`, the tool does not change it. Update these files manually.
+- If a file imports `PropTypes` from `react` under another name (`PropTypes as PT`), the tool does not change that import. Update these files manually.
 - The tool does not follow symbolic links in a folder. It shows a message for each link that it skips.
 - If you give a file path without an extension, the tool tries `.js`, `.jsx`, `.ts` and `.tsx` in that sequence.
 
 ## Upgrade from version 1
 
-Version 2 requires Node.js 24 or later. The commands and options did not change. If you must use Node.js 20 or 22, use version 1:
+Version 2 requires Node.js 24 or later. The commands and options did not change.
+
+Version 1 is deprecated and gets no more updates. Version 1.1.4 is the last release. If you must use Node.js 20 or 22, use version 1:
 
 ```bash
 npm install --global move-prop-types@1
