@@ -22,7 +22,7 @@ analysed individually.
 
 Fixes for an older major go to its `N.x` branch (for example `1.x`) through a pull
 request. When the pull request merges, the **Publish** workflow runs semantic-release on
-that branch. It creates the tag (for example `v1.1.4`), publishes to npm under the
+that branch. It creates the tag (for example `v1.1.5`), publishes to npm under the
 `release-N.x` dist-tag, and creates the GitHub release. `latest` stays on the current
 major. Create a maintenance branch from the last release tag of that major.
 
