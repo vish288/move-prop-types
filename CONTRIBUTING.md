@@ -5,7 +5,7 @@ Thank you for your interest in contributing to move-prop-types! This document pr
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js 20 or higher
+- Node.js 24 (current LTS) or higher
 - pnpm (recommended) or npm
 - Git
 
