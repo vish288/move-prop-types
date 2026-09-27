@@ -2,7 +2,7 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   esbuild: {
-    target: 'node20'
+    target: 'node24'
   },
   test: {
     environment: 'node',

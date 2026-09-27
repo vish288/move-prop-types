@@ -23,15 +23,15 @@
     "test": "test"
   },
   "bin": {
-    "move-prop-types": "./build/mpt.js",
-    "mpt": "./build/mpt.js"
+    "move-prop-types": "build/mpt.js",
+    "mpt": "build/mpt.js"
   },
   "files": [
     "build/mpt.js"
   ],
   "preferGlobal": true,
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   },
   "packageManager": "pnpm@12.6.0",
   "scripts": {
@@ -122,5 +122,8 @@
       "prettier --write"
     ]
   },
-  "repository": "https://github.com/vish288/move-prop-types.git"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vish288/move-prop-types.git"
+  }
 }
