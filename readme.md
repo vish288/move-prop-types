@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 > [!WARNING]
-> **Version 1 is deprecated.** Version 1.1.4 is the last 1.x release and gets no more updates.
+> **Version 1 is deprecated.** Version 1.1.5 is the last 1.x release and gets no more updates.
 > Use version 2. It requires Node.js 24 or later:
 >
 > ```bash
@@ -462,32 +462,6 @@ Contributions are welcome! Please feel free to submit a Pull Request. For major 
 3. Commit your changes (`git commit -m 'Add some amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
-
-## 📦 Release Status & NPM Publishing
-
-### Current Releases
-
-- ✅ **v1.0.0** - Stable release with full TypeScript support
-- ✅ **v0.20.1-beta.1** - Beta release with TypeScript support
-- 🔄 **NPM Publishing** - Automatic publishing configured
-
-### Missing NPM Versions
-
-The following GitHub releases are ready but not yet published to npm:
-- `v0.20.1-beta.1` (TypeScript support beta)
-- `v1.0.0` (stable release with TypeScript support)
-
-**These will be automatically published once the repository maintainer configures the NPM_TOKEN secret.**
-
-### Automatic Publishing System
-
-This repository includes an automated system to:
-- ✅ **Detect missing versions** between GitHub releases and npm
-- ✅ **Publish automatically** when NPM_TOKEN is configured
-- ✅ **Daily checks** for any missing versions
-- ✅ **Manual triggers** available via GitHub Actions
-
-For maintainers: See [`docs/NPM_PUBLISHING.md`](docs/NPM_PUBLISHING.md) for setup instructions.
 
 ## 📋 Requirements
 
