@@ -26,6 +26,11 @@ that branch. It creates the tag (for example `v1.1.4`), publishes to npm under t
 `release-N.x` dist-tag, and creates the GitHub release. `latest` stays on the current
 major. Create a maintenance branch from the last release tag of that major.
 
+npm trusted publishing allows `npm publish` only, not `npm dist-tag`. The release
+config therefore uses `.github/semantic-release/npm-publish-only.mjs`, the npm plugin
+without its `addChannel` step, so a maintenance branch never tries to move an
+existing version to another dist-tag.
+
 ## Authentication: npm trusted publishing
 
 The workflow publishes with [npm trusted publishing](https://docs.npmjs.com/trusted-publishers):
