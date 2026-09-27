@@ -2,7 +2,7 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   esbuild: {
-    target: 'node18'
+    target: 'node20'
   },
   test: {
     environment: 'node',
@@ -12,13 +12,7 @@ export default defineConfig({
     teardownTimeout: 10000,
     // Use threads pool with finite parallelism to prevent hanging
     pool: 'threads',
-    poolOptions: {
-      threads: {
-        minThreads: 1,
-        maxThreads: 4,
-        useAtomics: true
-      }
-    },
+    maxWorkers: 4,
     // Ensure tests exit cleanly
     watch: false, // Disable watch mode in CI
     coverage: {
