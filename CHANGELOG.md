@@ -1,3 +1,9 @@
+# Changelog
+
+Release notes for 1.1.3 and later are published on
+[GitHub Releases](https://github.com/vish288/move-prop-types/releases).
+This file lists earlier releases.
+
 ## [1.1.2](https://github.com/vish288/move-prop-types/compare/v1.1.1...v1.1.2) (2025-12-21)
 
 

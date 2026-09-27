@@ -1,9 +1,8 @@
 {
   "name": "move-prop-types",
-  "version": "1.1.2",
+  "version": "0.0.0-development",
   "description": "\"Help quickly replace the prop type checker in older react projects to map to prop-types\"",
   "main": "build/mpt.js",
-  "types": "build/index.d.ts",
   "type": "module",
   "keywords": [
     "npm",
@@ -27,6 +26,9 @@
     "move-prop-types": "./build/mpt.js",
     "mpt": "./build/mpt.js"
   },
+  "files": [
+    "build/mpt.js"
+  ],
   "preferGlobal": true,
   "engines": {
     "node": ">=20"
@@ -55,7 +57,8 @@
     "typecheck": "tsc --noEmit",
     "clean": "rimraf *.log build coverage dist",
     "prepare": "husky",
-    "prepublishOnly": "pnpm run build && pnpm run test:ci && pnpm run lint:check",
+    "prepack": "pnpm run build",
+    "prepublishOnly": "pnpm run test:ci && pnpm run lint:check",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "changelog:all": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
     "release": "standard-version",
@@ -85,9 +88,7 @@
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^15.3.0",
     "@rollup/plugin-terser": "^1.0.0",
-    "@semantic-release/changelog": "^7.0.0",
     "@semantic-release/commit-analyzer": "^13.0.1",
-    "@semantic-release/git": "^11.0.1",
     "@semantic-release/github": "^12.0.10",
     "@semantic-release/npm": "^13.2.0",
     "@semantic-release/release-notes-generator": "^14.1.1",
