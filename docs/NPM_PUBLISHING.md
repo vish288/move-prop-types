@@ -18,6 +18,14 @@ a GitHub release.
 Pull requests are merged with a merge commit so each conventional commit is
 analysed individually.
 
+## Maintenance releases (1.x)
+
+Fixes for an older major go to its `N.x` branch (for example `1.x`) through a pull
+request. When the pull request merges, the **Publish** workflow runs semantic-release on
+that branch. It creates the tag (for example `v1.1.4`), publishes to npm under the
+`release-N.x` dist-tag, and creates the GitHub release. `latest` stays on the current
+major. Create a maintenance branch from the last release tag of that major.
+
 ## Authentication: npm trusted publishing
 
 The workflow publishes with [npm trusted publishing](https://docs.npmjs.com/trusted-publishers):
@@ -41,6 +49,7 @@ automatically.
 
 ## Publish an existing tag
 
+Use this only to recover from a failed publish; normal releases need no manual step.
 semantic-release creates the git tag before it publishes to npm. If the publish step fails,
 the tag stays, and later runs treat that version as released. To publish such a tag:
 
