@@ -4,6 +4,14 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+> [!WARNING]
+> **Version 1 is deprecated.** Version 1.1.4 is the last 1.x release and gets no more updates.
+> Use version 2. It requires Node.js 24 or later:
+>
+> ```bash
+> npm install --global move-prop-types@latest
+> ```
+
 A modern, TypeScript-based CLI tool that automatically refactors your React codebase to use the standalone `prop-types` package instead of the deprecated `React.PropTypes`. Supports JavaScript, JSX, TypeScript, and TSX files with robust transformation capabilities.
 
 ## 🚀 Why move-prop-types?

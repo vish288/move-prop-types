@@ -1,9 +1,9 @@
 # npm Publishing
 
-Releases are fully automated. Every push to `main` runs the **Release and Publish**
-workflow (`.github/workflows/release.yml`), where
+Releases are fully automated. Every push to `main` runs the **Publish**
+workflow (`.github/workflows/publish.yml`), where
 [semantic-release](https://github.com/semantic-release/semantic-release) decides the
-next version from the commit messages, publishes to npm, tags the commit and creates
+next version from the commit messages, tags the commit, publishes to npm and creates
 a GitHub release.
 
 ## How versions are chosen
@@ -32,28 +32,31 @@ automatically.
 2. Under **Trusted Publisher**, choose **GitHub Actions** and enter:
    - Organization or user: `vish288`
    - Repository: `move-prop-types`
-   - Workflow filename: `release.yml`
+   - Workflow filename: `publish.yml`
    - Environment: _(leave empty)_
 3. Save. Optionally set **Publishing access** to
    _"Require two-factor authentication and disallow tokens"_ so only the trusted
    publisher can publish.
-4. Delete the `NPM_TOKEN` repository secret once a release has succeeded.
+4. Delete the `NPM_TOKEN` repository secret. The workflows do not use it.
 
-### Fallback: granular access token
+## Publish an existing tag
 
-If trusted publishing is not configured, the release job falls back to the
-`NPM_TOKEN` repository secret. Use a
-[granular access token](https://docs.npmjs.com/creating-and-viewing-access-tokens)
-scoped to this package with read and write access, and keep its expiry short.
+semantic-release creates the git tag before it publishes to npm. If the publish step fails,
+the tag stays, and later runs treat that version as released. To publish such a tag:
+
+1. Open **Actions → Publish → Run workflow** on `main`.
+2. Enter the tag, for example `v1.1.3`.
+3. Keep the dist-tag `latest` for the newest version. Use another dist-tag (for example
+   `legacy`) for an older version or a prerelease; the job refuses to move `latest` back.
+
+The job publishes the tagged sources through trusted publishing, then creates the GitHub
+release if it does not exist. It skips versions that are already on npm.
 
 ## Troubleshooting
 
-**`EINVALIDNPMTOKEN` / `401 Unauthorized`**: no trusted publisher is configured and
-`NPM_TOKEN` is missing, expired or revoked. Configure trusted publishing (preferred)
-or replace the secret, then re-run the failed workflow run.
-
-**`ENEEDAUTH` from the OIDC exchange**: check that the trusted publisher settings
-match the repository and the workflow filename exactly.
+**`ENEEDAUTH`, `EOTP` or `401` during publish**: the trusted publisher settings on
+npmjs.com do not match. Check the user, the repository and the workflow filename
+(`publish.yml`).
 
 ## Verifying a release
 
