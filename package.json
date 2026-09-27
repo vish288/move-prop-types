@@ -31,6 +31,7 @@
   "engines": {
     "node": ">=20"
   },
+  "packageManager": "pnpm@12.6.0",
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
@@ -43,8 +44,6 @@
     "monitor:watch": "node scripts/monitor-workflows.js --watch",
     "monitor:latest": "node scripts/monitor-workflows.js --latest",
     "monitor:trigger": "node scripts/monitor-workflows.js --trigger --watch",
-    "publish:missing": "node scripts/publish-missing-versions.js",
-    "publish:missing:dry": "node scripts/publish-missing-versions.js --dry-run",
     "build": "tsc && rollup -c",
     "postbuild": "node build/updateFile.js build/mpt.js",
     "dev": "nodemon src/core.ts",
@@ -86,12 +85,12 @@
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^15.3.0",
     "@rollup/plugin-terser": "^1.0.0",
-    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/changelog": "^7.0.0",
     "@semantic-release/commit-analyzer": "^13.0.1",
-    "@semantic-release/git": "^10.0.1",
-    "@semantic-release/github": "^11.0.3",
-    "@semantic-release/npm": "^12.0.2",
-    "@semantic-release/release-notes-generator": "^14.0.3",
+    "@semantic-release/git": "^11.0.1",
+    "@semantic-release/github": "^12.0.10",
+    "@semantic-release/npm": "^13.2.0",
+    "@semantic-release/release-notes-generator": "^14.1.1",
     "@types/babel__generator": "^7.27.0",
     "@types/babel__traverse": "^7.20.7",
     "@types/node": "^22.10.2",
@@ -110,21 +109,11 @@
     "prop-types": "^15.8.1",
     "rimraf": "^6.1.2",
     "rollup": "^4.63.5",
-    "semantic-release": "^24.2.7",
+    "semantic-release": "^25.0.9",
     "standard-version": "^9.5.0",
     "typescript": "^5.8.3",
     "vite": "^7.3.6",
     "vitest": "^4.1.11"
-  },
-  "pnpm": {
-    "overrides": {
-      "esbuild": ">=0.25.0",
-      "glob": ">=11.1.0",
-      "js-yaml": ">=4.1.1",
-      "@eslint/plugin-kit": ">=0.3.4",
-      "@conventional-changelog/git-client": ">=2.0.0",
-      "tmp": ">=0.2.4"
-    }
   },
   "lint-staged": {
     "*.ts": [
