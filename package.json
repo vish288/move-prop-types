@@ -31,6 +31,7 @@
   "engines": {
     "node": ">=20"
   },
+  "packageManager": "pnpm@12.6.0",
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
@@ -115,16 +116,6 @@
     "typescript": "^5.8.3",
     "vite": "^7.3.6",
     "vitest": "^4.1.11"
-  },
-  "pnpm": {
-    "overrides": {
-      "esbuild": ">=0.25.0",
-      "glob": ">=11.1.0",
-      "js-yaml": ">=4.1.1",
-      "@eslint/plugin-kit": ">=0.3.4",
-      "@conventional-changelog/git-client": ">=2.0.0",
-      "tmp": ">=0.2.4"
-    }
   },
   "lint-staged": {
     "*.ts": [
