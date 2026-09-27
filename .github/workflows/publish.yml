@@ -80,7 +80,5 @@ jobs:
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Publishing authenticates via npm trusted publishing (OIDC, id-token: write).
-          # NPM_TOKEN is only a fallback when no trusted publisher is configured.
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # npm authentication uses trusted publishing (OIDC via id-token: write); no npm token is stored
         run: pnpm exec semantic-release
