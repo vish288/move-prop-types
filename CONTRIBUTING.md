@@ -5,8 +5,8 @@ Thank you for your interest in contributing to move-prop-types! This document pr
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js 20 or higher
-- pnpm (recommended) or npm
+- Node.js 24 (current LTS) or higher
+- pnpm 12 (the version in `packageManager`; run `corepack enable` or `npm install --global pnpm@12`). npm and Yarn ignore the lockfile and the settings in `pnpm-workspace.yaml`.
 - Git
 
 ### Development Setup
