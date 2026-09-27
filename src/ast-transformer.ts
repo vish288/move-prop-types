@@ -35,27 +35,15 @@ function parseCode(code: string, filename: string): t.File {
     sourceType: 'module',
     allowImportExportEverywhere: false,
     allowReturnOutsideFunction: false,
+    // Babel 8 always parses ES2020+ syntax; list only non-standard syntax here
     plugins: [
       'jsx',
-      'asyncGenerators',
-      'bigInt',
-      'classProperties',
       'decorators-legacy',
       'doExpressions',
-      'dynamicImport',
       'exportDefaultFrom',
-      'exportNamespaceFrom',
       'functionBind',
       'functionSent',
-      'importMeta',
-      'nullishCoalescingOperator',
-      'numericSeparator',
-      'objectRestSpread',
-      'optionalCatchBinding',
-      'optionalChaining',
       'throwExpressions',
-      'topLevelAwait',
-      // 'trailingFunctionCommas',
       ...(isTypeScript ? ['typescript' as const] : [])
     ]
   });
