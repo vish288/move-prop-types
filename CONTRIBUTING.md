@@ -52,7 +52,7 @@ Thank you for your interest in contributing to move-prop-types! This document pr
 ### Available Scripts
 
 - `pnpm run build` - Build the TypeScript project
-- `pnpm run dev` - Watch mode for development
+- `pnpm run watch` - Recompile TypeScript on every change
 - `pnpm test` - Run the test suite
 - `pnpm run test:coverage` - Run tests with coverage report
 - `pnpm run lint` - Check and fix linting issues
