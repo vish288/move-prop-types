@@ -1,0 +1,16 @@
+# pnpm settings (pnpm no longer reads the "pnpm" field in package.json).
+#
+# Supply-chain defaults relied on from pnpm >= 11:
+# - dependency build scripts only run when approved in allowBuilds
+# - newly published versions are held back for 24h (minimumReleaseAge)
+
+overrides:
+  # Transitive via conventional-changelog-cli; older versions allow argument injection
+  '@conventional-changelog/git-client': ^2.0.0
+  # Transitive via np > inquirer; GHSA-ph9p-34f9-6g65 path traversal in < 0.2.6
+  tmp: ^0.2.6
+
+# Dependency build scripts, reviewed one by one (true = run, false = skip)
+allowBuilds:
+  # postinstall only validates the platform binary shipped via optionalDependencies
+  esbuild: false

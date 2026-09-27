@@ -1,195 +1,63 @@
-# NPM Publishing Setup
+# npm Publishing
 
-This document explains how to configure NPM publishing for the move-prop-types repository and how to publish missing versions.
+Releases are fully automated. Every push to `main` runs the **Release and Publish**
+workflow (`.github/workflows/release.yml`), where
+[semantic-release](https://github.com/semantic-release/semantic-release) decides the
+next version from the commit messages, publishes to npm, tags the commit and creates
+a GitHub release.
 
-## Quick Setup
+## How versions are chosen
 
-### 1. Configure NPM_TOKEN
+| Commit type                                  | Release |
+| -------------------------------------------- | ------- |
+| `fix:` / `perf:`                             | patch   |
+| `feat:`                                      | minor   |
+| `BREAKING CHANGE:` footer or `type!:` header | major   |
+| `build:`, `ci:`, `docs:`, `chore:`, ...      | none    |
 
-1. **Create NPM Access Token**:
-   - Go to [npmjs.com](https://npmjs.com) and sign in
-   - Navigate to Account Settings → Access Tokens
-   - Click "Generate New Token"
-   - Select "Automation" token type
-   - Set permissions to include publishing
-   - Copy the generated token
+Pull requests are merged with a merge commit so each conventional commit is
+analysed individually.
 
-2. **Add GitHub Secret**:
-   - Go to repository Settings → Secrets and variables → Actions
-   - Click "New repository secret"
-   - Name: `NPM_TOKEN`
-   - Value: (paste the token from step 1)
-   - Click "Add secret"
+## Authentication: npm trusted publishing
 
-### 2. Automatic Publishing
+The workflow publishes with [npm trusted publishing](https://docs.npmjs.com/trusted-publishers):
+GitHub issues a short-lived OIDC token to the release job (`id-token: write`) that
+npm exchanges for a one-time publish credential. No long-lived npm token is stored,
+and every release gets a [provenance attestation](https://docs.npmjs.com/generating-provenance-statements)
+automatically.
 
-Once `NPM_TOKEN` is configured:
+### One-time setup on npmjs.com
 
-- ✅ **Future releases**: Automatically published via semantic-release
-- ✅ **Missing versions**: Automatically detected and published
+1. Open <https://www.npmjs.com/package/move-prop-types/access>.
+2. Under **Trusted Publisher**, choose **GitHub Actions** and enter:
+   - Organization or user: `vish288`
+   - Repository: `move-prop-types`
+   - Workflow filename: `release.yml`
+   - Environment: _(leave empty)_
+3. Save. Optionally set **Publishing access** to
+   _"Require two-factor authentication and disallow tokens"_ so only the trusted
+   publisher can publish.
+4. Delete the `NPM_TOKEN` repository secret once a release has succeeded.
 
-## Missing Versions Publisher
+### Fallback: granular access token
 
-### Current Status
-
-**Unpublished versions that will be published once NPM_TOKEN is set:**
-- `v0.20.1-beta.1` (TypeScript support beta)
-- `v1.0.0` (stable release with TypeScript support)
-
-### Manual Publishing
-
-You can manually trigger publishing of missing versions:
-
-```bash
-# Check what would be published (dry run)
-npm run publish:missing:dry
-
-# Actually publish missing versions (requires NPM_TOKEN)
-npm run publish:missing
-```
-
-### GitHub Actions
-
-The repository includes automated workflows:
-
-1. **Manual Trigger**: Go to Actions → "Publish Missing Versions" → "Run workflow"
-2. **Scheduled Check**: Runs daily at 6 AM UTC to detect and publish missing versions
-3. **Automatic**: Runs when NPM_TOKEN is first configured
-
-## How It Works
-
-### Detection Logic
-
-The system compares GitHub releases with published npm versions:
-
-1. **Fetches GitHub releases** using GitHub CLI (`gh api`)
-2. **Fetches npm versions** using `npm view`
-3. **Identifies missing versions** by comparing the two lists
-4. **Publishes in order** from oldest to newest
-
-### Publishing Process
-
-For each missing version:
-
-1. **Checkout the tag** (`git checkout v{version}`)
-2. **Install dependencies** (`pnpm install --frozen-lockfile`)
-3. **Build the package** (`pnpm run build`)
-4. **Publish to npm** (`npm publish --access public`)
-
-### Safety Features
-
-- ✅ **Dry run mode** to preview what would be published
-- ✅ **Authentication check** before attempting to publish
-- ✅ **Automatic cleanup** restores original git branch
-- ✅ **Error handling** continues with other versions on failure
-- ✅ **Issue creation** on failure for manual intervention
-
-## Commands Reference
-
-### NPM Scripts
-
-```bash
-# Publishing missing versions
-npm run publish:missing:dry    # Dry run - show what would be published
-npm run publish:missing        # Actually publish missing versions
-
-# Development
-npm run build                  # Build the package
-npm run test:ci               # Run tests
-npm run lint:check            # Check linting
-
-# Monitoring
-npm run monitor:latest        # Check latest workflow status
-npm run monitor:watch         # Watch workflows in real-time
-```
-
-### GitHub CLI Commands
-
-```bash
-# Trigger manual publishing workflow
-gh workflow run publish-missing.yml
-
-# Check workflow status
-gh run list --workflow=publish-missing.yml
-
-# View latest workflow logs
-gh run view --log
-```
+If trusted publishing is not configured, the release job falls back to the
+`NPM_TOKEN` repository secret. Use a
+[granular access token](https://docs.npmjs.com/creating-and-viewing-access-tokens)
+scoped to this package with read and write access, and keep its expiry short.
 
 ## Troubleshooting
 
-### NPM Authentication Issues
+**`EINVALIDNPMTOKEN` / `401 Unauthorized`**: no trusted publisher is configured and
+`NPM_TOKEN` is missing, expired or revoked. Configure trusted publishing (preferred)
+or replace the secret, then re-run the failed workflow run.
 
-**Error**: `ENEEDAUTH` or `Invalid npm token`
+**`ENEEDAUTH` from the OIDC exchange**: check that the trusted publisher settings
+match the repository and the workflow filename exactly.
 
-**Solutions**:
-1. Verify NPM_TOKEN is correctly set in GitHub secrets
-2. Ensure token has publishing permissions
-3. Check if 2FA is set to "Authorization only" (not "Authorization and writes")
-
-### Publishing Failures
-
-**Error**: Version already exists
-
-**Cause**: Version was published outside of this system
-
-**Solution**: This is normal - the script will skip existing versions
-
-**Error**: Build failures
-
-**Cause**: Dependencies or build process changed between versions
-
-**Solution**: Check the specific version's requirements and dependencies
-
-### Git Issues
-
-**Error**: Cannot checkout tag
-
-**Cause**: Local git state conflicts
-
-**Solution**: 
-```bash
-git stash                    # Save local changes
-git checkout main            # Return to main branch
-npm run publish:missing      # Try again
-```
-
-## Monitoring
-
-### GitHub Actions
-
-- View workflows: Repository → Actions tab
-- Check "Publish Missing Versions" workflow runs
-- Review logs for detailed publishing information
-
-### NPM Registry
+## Verifying a release
 
 ```bash
-# Check latest published version
 npm view move-prop-types version
-
-# Check all published versions
-npm view move-prop-types versions --json
-
-# Verify specific version exists
-npm view move-prop-types@1.0.0
+npm audit signatures   # in a project that depends on move-prop-types
 ```
-
-## Security Considerations
-
-- ✅ NPM_TOKEN is stored securely in GitHub secrets
-- ✅ Only repository maintainers can configure secrets
-- ✅ Publishing requires authentication
-- ✅ All actions are logged and auditable
-- ✅ Workflow runs in isolated GitHub Actions environment
-
-## Support
-
-If you encounter issues:
-
-1. **Check workflow logs** in GitHub Actions
-2. **Review error messages** in the script output
-3. **Verify NPM_TOKEN** is correctly configured
-4. **Open an issue** if problems persist
-
-The system is designed to be robust and will create GitHub issues automatically if publishing fails.
