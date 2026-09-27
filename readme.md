@@ -128,7 +128,7 @@ mpt -I -F src
 
 Version 2 requires Node.js 24 or later. The commands and options did not change.
 
-Version 1 is deprecated and gets no more updates. Version 1.1.4 is the last release. If you must use Node.js 20 or 22, use version 1:
+Version 1 is deprecated and gets no more updates. Version 1.1.5 is the last release. If you must use Node.js 20 or 22, use version 1:
 
 ```bash
 npm install --global move-prop-types@1
