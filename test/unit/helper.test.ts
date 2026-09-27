@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { promises as fs } from 'fs';
 import path from 'path';
+import os from 'os';
 import { findMatch, installPackage, updateFile, updateFolder } from '../../src/helper.js';
 
 // Mock dependencies
@@ -192,6 +193,23 @@ MyComponent.propTypes = {
       
       expect(content1).toContain('import PropTypes from \'prop-types\';');
       expect(content2).toContain('import PropTypes from \'prop-types\';');
+    });
+
+    it('should not follow symbolic links out of the target folder', async () => {
+      const outsideDir = await fs.mkdtemp(path.join(os.tmpdir(), 'mpt-outside-'));
+      const outsideFile = path.join(outsideDir, 'victim.js');
+      const content = `import React, { PropTypes } from 'react';`;
+      await fs.writeFile(outsideFile, content);
+      await fs.symlink(outsideFile, path.join(testDir, 'linked.js'));
+      await fs.symlink(outsideDir, path.join(testDir, 'linked-dir'));
+
+      try {
+        await updateFolder('test', testDir);
+
+        expect(await fs.readFile(outsideFile, 'utf-8')).toBe(content);
+      } finally {
+        await fs.rm(outsideDir, { recursive: true, force: true });
+      }
     });
 
     it('should handle empty folder', async () => {
