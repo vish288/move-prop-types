@@ -154,6 +154,70 @@ MyComponent.propTypes = {
       const updatedContent = await fs.readFile(testFile, 'utf-8');
       expect(updatedContent).toBe(originalContent);
     });
+
+    it('should convert React.PropTypes when PropTypes is not imported from react', async () => {
+      await fs.writeFile(
+        testFile,
+        "import React from 'react';\n\nconst A = () => null;\nA.propTypes = { x: React.PropTypes.string };\n"
+      );
+
+      await updateFile('test', testFile);
+
+      expect(await fs.readFile(testFile, 'utf-8')).toBe(
+        "import React from 'react';\nimport PropTypes from 'prop-types';\n\nconst A = () => null;\nA.propTypes = { x: PropTypes.string };\n"
+      );
+    });
+
+    it('should put the prop-types import on its own line after the react import', async () => {
+      await fs.writeFile(
+        testFile,
+        "import React, { Component, PropTypes } from 'react';\nclass G extends Component {}\nG.propTypes = { name: React.PropTypes.string };\n"
+      );
+
+      await updateFile('test', testFile);
+
+      expect(await fs.readFile(testFile, 'utf-8')).toBe(
+        "import React, { Component } from 'react';\nimport PropTypes from 'prop-types';\nclass G extends Component {}\nG.propTypes = { name: PropTypes.string };\n"
+      );
+    });
+
+    it('should only change the react import statement, not commas elsewhere', async () => {
+      const body =
+        'const holes = [1, , 2];\nconst options = {\n  a: 1,\n};\nA.propTypes = {\n  x: React.PropTypes.string,\n};\n';
+      await fs.writeFile(testFile, `import React, { PropTypes } from 'react';\n${body}`);
+
+      await updateFile('test', testFile);
+
+      expect(await fs.readFile(testFile, 'utf-8')).toBe(
+        `import React from 'react';\nimport PropTypes from 'prop-types';\n${body.replace('React.PropTypes', 'PropTypes')}`
+      );
+    });
+
+    it('should remove an import that only brought in PropTypes from react', async () => {
+      await fs.writeFile(
+        testFile,
+        "import React from 'react';\nimport { PropTypes } from 'react';\nA.propTypes = { x: PropTypes.string };\n"
+      );
+
+      await updateFile('test', testFile);
+
+      expect(await fs.readFile(testFile, 'utf-8')).toBe(
+        "import React from 'react';\nimport PropTypes from 'prop-types';\nA.propTypes = { x: PropTypes.string };\n"
+      );
+    });
+
+    it('should use require for CommonJS files', async () => {
+      await fs.writeFile(
+        testFile,
+        "const React = require('react');\nA.propTypes = { x: React.PropTypes.string };\n"
+      );
+
+      await updateFile('test', testFile);
+
+      expect(await fs.readFile(testFile, 'utf-8')).toBe(
+        "const React = require('react');\nconst PropTypes = require('prop-types');\nA.propTypes = { x: PropTypes.string };\n"
+      );
+    });
   });
 
   describe('updateFolder', () => {
@@ -210,6 +274,21 @@ MyComponent.propTypes = {
       } finally {
         await fs.rm(outsideDir, { recursive: true, force: true });
       }
+    });
+
+    it('should convert every file when several files are processed in a row', async () => {
+      // A file that is skipped must not leave regex state behind for the next file
+      const skipped = path.join(testDir, 'a-skipped.js');
+      const converted = path.join(testDir, 'b-converted.js');
+      await fs.writeFile(
+        skipped,
+        `${'// padding\n'.repeat(50)}import React, { PropTypes } from 'react';\nimport PropTypes from 'prop-types';\n`
+      );
+      await fs.writeFile(converted, "import React, { PropTypes } from 'react';\nA.propTypes = { x: React.PropTypes.string };\n");
+
+      await updateFolder('test', testDir);
+
+      expect(await fs.readFile(converted, 'utf-8')).toContain("import PropTypes from 'prop-types';");
     });
 
     it('should handle empty folder', async () => {
