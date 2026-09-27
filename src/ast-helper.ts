@@ -139,20 +139,30 @@ export const updateFolder: UpdateFolderFunction = async (
 ): Promise<void> => {
   console.log('');
   try {
-    const files = await readdirAsync(folderName);
+    const entries = (await readdirAsync(folderName)).map((name) => ({
+      name,
+      stats: lstatSync(`${folderName}/${name}`),
+    }));
 
-    const folderInFolder = files.filter((source) =>
-      lstatSync(`${folderName}/${source}`).isDirectory()
-    );
+    // Never follow symbolic links: they can point outside the target folder
+    const links = entries.filter(({ stats }) => stats.isSymbolicLink());
+    for (const { name } of links) {
+      console.log(`Skipping symbolic link ${folderName}/${name}`);
+    }
+    const files = entries.filter(({ stats }) => !stats.isSymbolicLink());
+
+    const folderInFolder = files
+      .filter(({ stats }) => stats.isDirectory())
+      .map(({ name }) => name);
 
     // Process subdirectories recursively
     for (const folder of folderInFolder) {
       await updateFolder('updateFolder', `${folderName}/${folder}`);
     }
 
-    const filesInFolder = files.filter(
-      (source) => !lstatSync(`${folderName}/${source}`).isDirectory()
-    );
+    const filesInFolder = files
+      .filter(({ stats }) => stats.isFile())
+      .map(({ name }) => name);
 
     // Process files in current directory (filter for supported file types)
     const supportedFiles = filesInFolder.filter(file => 
