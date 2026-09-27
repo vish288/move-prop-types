@@ -402,7 +402,7 @@ export default MyComponent;
 ## 🧪 Development
 
 ### Prerequisites
-- Node.js 20+
+- Node.js 24+ (current LTS)
 - pnpm (recommended) or npm
 
 ### Setup
@@ -483,7 +483,7 @@ For maintainers: See [`docs/NPM_PUBLISHING.md`](docs/NPM_PUBLISHING.md) for setu
 
 ## 📋 Requirements
 
-- **Node.js**: Version 20 or higher
+- **Node.js**: Version 24 (current LTS) or higher
 - **File Types**: Supports `.js`, `.jsx`, `.ts`, and `.tsx` files
 - **React Versions**: Compatible with all React versions that used `React.PropTypes`
 
