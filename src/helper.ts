@@ -7,15 +7,7 @@ import { lstatSync, readdir, readFile, writeFile } from 'fs';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 
-import {
-  es6PropTypeJust,
-  es6PropTypeLeft,
-  es6PropTypeMiddle,
-  es6PropTypeRight,
-  fileEncoding,
-  importState,
-  reactProto,
-} from './constants.js';
+import { fileEncoding, importState } from './constants.js';
 
 import type {
   FindMatchFunction,
@@ -59,51 +51,105 @@ export const installPackage: InstallPackageFunction = async (): Promise<void> =>
   }
 };
 
+const REACT_IMPORT = /^import\s+([^;]*?)\s+from\s*(['"])react\2;?[ \t]*\n?/gm;
+const REACT_REQUIRE = /^.*\brequire\(\s*(['"])react\1\s*\).*\n?/m;
+const PROP_TYPES_IMPORTED = /^\s*import\s+PropTypes\s+from\s*(['"])prop-types\1/m;
+const REACT_PROP_TYPES = /\bReact\.PropTypes\b/g;
+const USES_REACT_PROP_TYPES = /\bReact\.PropTypes\b/;
+const PROP_TYPES_IMPORT = "import PropTypes from 'prop-types';\n";
+const PROP_TYPES_REQUIRE = "const PropTypes = require('prop-types');\n";
+
+/**
+ * Remove a `PropTypes` named import from the clause of one `import ... from 'react'`
+ * statement. Returns the new clause ('' when nothing is left) or null if the clause
+ * does not import PropTypes.
+ */
+const removePropTypesSpecifier = (clause: string): string | null => {
+  const braces = /\{([^}]*)\}/.exec(clause);
+  if (!braces) {
+    return null;
+  }
+  const named = (braces[1] ?? '')
+    .split(',')
+    .map((name) => name.trim())
+    .filter(Boolean);
+  if (!named.includes('PropTypes')) {
+    return null;
+  }
+  const remaining = named.filter((name) => name !== 'PropTypes');
+  const defaultPart = clause.slice(0, braces.index).replace(/,\s*$/, '').trim();
+  const namedPart = remaining.length ? `{ ${remaining.join(', ')} }` : '';
+  return [defaultPart, namedPart].filter(Boolean).join(', ');
+};
+
+/**
+ * Convert one source file from `React.PropTypes` to the `prop-types` package.
+ * Only the react import statement and `React.PropTypes` references are changed.
+ * Returns the new source, or null when the file needs no change.
+ */
+export const transformSource = (source: string): string | null => {
+  if (PROP_TYPES_IMPORTED.test(source)) {
+    return null;
+  }
+
+  let removedSpecifier = false;
+  let insertAt = -1;
+  let result = source.replace(
+    REACT_IMPORT,
+    (statement: string, clause: string, quote: string, offset: number): string => {
+      const newClause = removePropTypesSpecifier(clause);
+      let replacement = statement;
+      if (newClause !== null) {
+        removedSpecifier = true;
+        const lineEnd = statement.endsWith('\n') ? '\n' : '';
+        const semicolon = /;[ \t]*\n?$/.test(statement) ? ';' : '';
+        replacement = newClause
+          ? `import ${newClause} from ${quote}react${quote}${semicolon}${lineEnd}`
+          : '';
+      }
+      // The first react import has no earlier replacement, so its offset is also valid in the result
+      if (insertAt === -1) {
+        insertAt = offset + replacement.length;
+      }
+      return replacement;
+    }
+  );
+
+  if (!removedSpecifier && !USES_REACT_PROP_TYPES.test(result)) {
+    return null;
+  }
+
+  // Insert before replacing React.PropTypes, which shifts later offsets
+  if (insertAt !== -1) {
+    const needsNewline = insertAt > 0 && result[insertAt - 1] !== '\n';
+    result = `${result.slice(0, insertAt)}${needsNewline ? '\n' : ''}${PROP_TYPES_IMPORT}${result.slice(insertAt)}`;
+  } else {
+    const requireLine = REACT_REQUIRE.exec(result);
+    if (requireLine) {
+      const end = requireLine.index + requireLine[0].length;
+      const needsNewline = !requireLine[0].endsWith('\n');
+      result = `${result.slice(0, end)}${needsNewline ? '\n' : ''}${PROP_TYPES_REQUIRE}${result.slice(end)}`;
+    } else {
+      result = `${PROP_TYPES_IMPORT}${result}`;
+    }
+  }
+
+  return result.replace(REACT_PROP_TYPES, 'PropTypes');
+};
+
 /**
  * Write file with ES6 prop-types conversion
  */
 const writeFileAsyncEs6 = async (fileAndPath: string): Promise<void> => {
   try {
     const data = await readFileAsync(fileAndPath, fileEncoding);
-    const dataString = data.toString();
-    const isPropTypeUsed =
-      es6PropTypeJust.test(dataString) ||
-      es6PropTypeLeft.test(dataString) ||
-      es6PropTypeMiddle.test(dataString) ||
-      es6PropTypeRight.test(dataString);
-    const isPropTypeAlreadyPresent = dataString.indexOf(importState) !== -1;
-
-    if (!isPropTypeUsed || isPropTypeAlreadyPresent) {
+    const newData = transformSource(data.toString());
+    if (newData === null) {
       return;
     }
 
-    let newData = dataString.replace(es6PropTypeJust, '');
-    newData = newData.replace(es6PropTypeLeft, '{');
-    newData = newData.replace(es6PropTypeMiddle, ',');
-    newData = newData.replace(es6PropTypeRight, ' }');
-
-    // Clean up any double spaces in imports
-    newData = newData.replace(/import React, \{\s+([^}]+)\s+\}/g, 'import React, { $1 }');
-    newData = newData.replace(/,\s+,/g, ',');
-    newData = newData.replace(/,\s+}/g, ' }');
-
-    newData = newData.replace(reactProto, 'PropTypes.');
-
-    // Find a good place to insert the import - after the first import or at the beginning
-    const importRegex = /(import.*?['"].*?['"];?\n)/;
-    const match = newData.match(importRegex);
-
-    if (match) {
-      const insertPosition = newData.indexOf(match[0]) + match[0].length;
-      newData = newData.slice(0, insertPosition) + importState + newData.slice(insertPosition);
-    } else {
-      newData = `${importState}\n${newData}`;
-    }
-
-    if (newData) {
-      await writeFileAsync(fileAndPath, newData, fileEncoding);
-      console.log(`${chalk.magenta.italic(fileAndPath)} just got ${chalk.green('updated')}!`);
-    }
+    await writeFileAsync(fileAndPath, newData, fileEncoding);
+    console.log(`${chalk.magenta.italic(fileAndPath)} just got ${chalk.green('updated')}!`);
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     console.error(`Error processing file ${fileAndPath}:`, errorMessage);
