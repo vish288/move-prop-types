@@ -7,7 +7,6 @@ settings:
 overrides:
   esbuild: '>=0.25.0'
   glob: '>=11.1.0'
-  vite: '>=5.4.21'
   js-yaml: '>=4.1.1'
   '@eslint/plugin-kit': '>=0.3.4'
   '@conventional-changelog/git-client': '>=2.0.0'
@@ -138,9 +137,12 @@ importers:
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
+      vite:
+        specifier: ^7.3.6
+        version: 7.3.6(@types/node@22.16.5)(terser@5.43.1)(yaml@2.8.0)
       vitest:
         specifier: ^4.1.11
-        version: 4.1.11(@types/node@22.16.5)(@vitest/ui@4.1.11)(vite@7.2.7(@types/node@22.16.5)(terser@5.43.1)(yaml@2.8.0))
+        version: 4.1.11(@types/node@22.16.5)(@vitest/ui@4.1.11)(vite@7.3.6(@types/node@22.16.5)(terser@5.43.1)(yaml@2.8.0))
 
 packages:
 
@@ -1542,7 +1544,7 @@ packages:
     resolution: {integrity: sha512-2XJVD55d1o5AZous5CCGKS74g/riOj9odEt2bQpCVZeblHyHdnMeFl4jl0XjU21stf4mbjUkew2eXQZt65g5CQ==}
     peerDependencies:
       msw: ^2.4.9
-      vite: '>=5.4.21'
+      vite: ^6.0.0 || ^7.0.0 || ^8.0.0
     peerDependenciesMeta:
       msw:
         optional: true
@@ -4246,8 +4248,8 @@ packages:
     resolution: {integrity: sha512-OljLrQ9SQdOUqTaQxqL5dEfZWrXExyyWsozYlAWFawPVNuD83igl7uJD2RTkNMbniIYgt8l81eCJGIdQF7avLQ==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
 
-  vite@7.2.7:
-    resolution: {integrity: sha512-ITcnkFeR3+fI8P1wMgItjGrR10170d8auB4EpMLPqmx6uxElH3a/hHGQabSHKdqd4FXWO1nFIp9rRn7JQ34ACQ==}
+  vite@7.3.6:
+    resolution: {integrity: sha512-4XP60spRGjSZFf1qYH+dJIkK2znL3zQfl9KkOV9MkkRR/3Dls0dxaBsQPTloEc5BLXWPL9vsOxopxyKoMmDueg==}
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
     peerDependencies:
@@ -4302,7 +4304,7 @@ packages:
       '@vitest/ui': 4.1.11
       happy-dom: '*'
       jsdom: '*'
-      vite: '>=5.4.21'
+      vite: ^6.0.0 || ^7.0.0 || ^8.0.0
     peerDependenciesMeta:
       '@edge-runtime/vm':
         optional: true
@@ -5892,13 +5894,13 @@ snapshots:
       chai: 6.2.2
       tinyrainbow: 3.1.1
 
-  '@vitest/mocker@4.1.11(vite@7.2.7(@types/node@22.16.5)(terser@5.43.1)(yaml@2.8.0))':
+  '@vitest/mocker@4.1.11(vite@7.3.6(@types/node@22.16.5)(terser@5.43.1)(yaml@2.8.0))':
     dependencies:
       '@vitest/spy': 4.1.11
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 7.2.7(@types/node@22.16.5)(terser@5.43.1)(yaml@2.8.0)
+      vite: 7.3.6(@types/node@22.16.5)(terser@5.43.1)(yaml@2.8.0)
 
   '@vitest/pretty-format@4.1.11':
     dependencies:
@@ -5927,7 +5929,7 @@ snapshots:
       sirv: 3.0.2
       tinyglobby: 0.2.15
       tinyrainbow: 3.1.1
-      vitest: 4.1.11(@types/node@22.16.5)(@vitest/ui@4.1.11)(vite@7.2.7(@types/node@22.16.5)(terser@5.43.1)(yaml@2.8.0))
+      vitest: 4.1.11(@types/node@22.16.5)(@vitest/ui@4.1.11)(vite@7.3.6(@types/node@22.16.5)(terser@5.43.1)(yaml@2.8.0))
 
   '@vitest/utils@4.1.11':
     dependencies:
@@ -8607,7 +8609,7 @@ snapshots:
 
   validate-npm-package-name@5.0.1: {}
 
-  vite@7.2.7(@types/node@22.16.5)(terser@5.43.1)(yaml@2.8.0):
+  vite@7.3.6(@types/node@22.16.5)(terser@5.43.1)(yaml@2.8.0):
     dependencies:
       esbuild: 0.25.8
       fdir: 6.5.0(picomatch@4.0.3)
@@ -8621,10 +8623,10 @@ snapshots:
       terser: 5.43.1
       yaml: 2.8.0
 
-  vitest@4.1.11(@types/node@22.16.5)(@vitest/ui@4.1.11)(vite@7.2.7(@types/node@22.16.5)(terser@5.43.1)(yaml@2.8.0)):
+  vitest@4.1.11(@types/node@22.16.5)(@vitest/ui@4.1.11)(vite@7.3.6(@types/node@22.16.5)(terser@5.43.1)(yaml@2.8.0)):
     dependencies:
       '@vitest/expect': 4.1.11
-      '@vitest/mocker': 4.1.11(vite@7.2.7(@types/node@22.16.5)(terser@5.43.1)(yaml@2.8.0))
+      '@vitest/mocker': 4.1.11(vite@7.3.6(@types/node@22.16.5)(terser@5.43.1)(yaml@2.8.0))
       '@vitest/pretty-format': 4.1.11
       '@vitest/runner': 4.1.11
       '@vitest/snapshot': 4.1.11
@@ -8641,7 +8643,7 @@ snapshots:
       tinyexec: 1.3.1
       tinyglobby: 0.2.15
       tinyrainbow: 3.1.1
-      vite: 7.2.7(@types/node@22.16.5)(terser@5.43.1)(yaml@2.8.0)
+      vite: 7.3.6(@types/node@22.16.5)(terser@5.43.1)(yaml@2.8.0)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 22.16.5
