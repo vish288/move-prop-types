@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main, 'feat/*', 'fix/*', 'refactor/*']
+    branches: [main, '[0-9]+.x', 'feat/*', 'fix/*', 'refactor/*']
   pull_request:
-    branches: [main]
+    branches: [main, '[0-9]+.x']
 
 permissions:
   contents: read
@@ -46,9 +46,3 @@ jobs:
 
       - name: Build project
         run: pnpm run build
-
-      - name: Upload coverage
-        if: matrix.node-version == 24
-        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
-        with:
-          fail_ci_if_error: false
