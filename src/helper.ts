@@ -161,57 +161,71 @@ export const transformSource = (source: string): string | null => {
 
 // Never follow a symbolic link when opening a file to rewrite, and never block on a pipe
 // (O_NOFOLLOW and O_NONBLOCK are not defined on Windows)
-const NO_FOLLOW = constants.O_NOFOLLOW ?? 0;
-const READ_FLAGS = constants.O_RDONLY | NO_FOLLOW | (constants.O_NONBLOCK ?? 0);
-const WRITE_FLAGS = constants.O_WRONLY | NO_FOLLOW;
+const OPEN_FLAGS = (constants.O_NOFOLLOW ?? 0) | (constants.O_NONBLOCK ?? 0);
+const NOT_WRITABLE = ['EACCES', 'EPERM', 'EROFS'];
+
+const errorCode = (error: unknown): string | undefined => (error as { code?: string }).code;
+
+/**
+ * Open a file once for both reading and writing, so the file that is checked and read is the
+ * one that gets written. A file that cannot be opened for writing is opened read-only: it is
+ * reported only if it needs a change.
+ */
+const openForRewrite = async (
+  fileAndPath: string
+): Promise<{ handle: fsPromises.FileHandle; writable: boolean }> => {
+  try {
+    return { handle: await fsPromises.open(fileAndPath, constants.O_RDWR | OPEN_FLAGS), writable: true };
+  } catch (error: unknown) {
+    if (!NOT_WRITABLE.includes(errorCode(error) ?? '')) {
+      throw error;
+    }
+    return { handle: await fsPromises.open(fileAndPath, constants.O_RDONLY | OPEN_FLAGS), writable: false };
+  }
+};
 
 /**
  * Write file with ES6 prop-types conversion.
  * The file is opened without following symbolic links and must be a regular file, and the
- * write goes to the same file that was read, so a path swapped for a link or another file
- * after the folder walk checked it cannot redirect the write.
+ * same open file is read and rewritten, so a path swapped for a link or another file after
+ * the folder walk checked it cannot redirect the write.
  */
 const writeFileAsyncEs6 = async (fileAndPath: string): Promise<void> => {
   const shownPath = printable(fileAndPath);
-  let reader: fsPromises.FileHandle | undefined;
-  let writer: fsPromises.FileHandle | undefined;
+  let handle: fsPromises.FileHandle | undefined;
   try {
-    reader = await fsPromises.open(fileAndPath, READ_FLAGS);
-    const readStats = await reader.stat();
-    if (!readStats.isFile()) {
+    const opened = await openForRewrite(fileAndPath);
+    ({ handle } = opened);
+    if (!(await handle.stat()).isFile()) {
       console.log(`Skipping ${shownPath} - not a regular file`);
       return;
     }
 
-    const newData = transformSource(await reader.readFile({ encoding: fileEncoding }));
+    const newData = transformSource(await handle.readFile({ encoding: fileEncoding }));
     if (newData === null) {
       return;
     }
-
-    writer = await fsPromises.open(fileAndPath, WRITE_FLAGS);
-    const writeStats = await writer.stat();
-    if (writeStats.dev !== readStats.dev || writeStats.ino !== readStats.ino) {
-      console.error(`Error processing file ${shownPath}:`, 'the file was replaced while it was read');
+    if (!opened.writable) {
+      console.error(`Error processing file ${shownPath}:`, 'permission denied');
       return;
     }
 
     const bytes = Buffer.from(newData, fileEncoding);
-    await writer.truncate(0);
+    await handle.truncate(0);
     for (let written = 0; written < bytes.length; ) {
-      const { bytesWritten } = await writer.write(bytes, written, bytes.length - written, written);
+      const { bytesWritten } = await handle.write(bytes, written, bytes.length - written, written);
       written += bytesWritten;
     }
     console.log(`${chalk.magenta.italic(shownPath)} just got ${chalk.green('updated')}!`);
   } catch (error: unknown) {
-    const { code } = error as { code?: string };
+    const code = errorCode(error);
     if (code === 'ELOOP' || code === 'EMLINK') {
       console.log(`Skipping symbolic link ${shownPath}`);
       return;
     }
     console.error(`Error processing file ${shownPath}:`, errorText(error));
   } finally {
-    await reader?.close();
-    await writer?.close();
+    await handle?.close();
   }
 };
 

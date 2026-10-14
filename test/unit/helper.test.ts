@@ -253,6 +253,24 @@ MyComponent.propTypes = {
       expect(console.error).not.toHaveBeenCalled();
     });
 
+    // root can write to read-only files, so this only runs as a regular user (as on CI)
+    it.skipIf(process.getuid?.() === 0)(
+      'should report a read-only file that needs a change and leave it unchanged',
+      async () => {
+        const content = "import React, { PropTypes } from 'react';\n";
+        await fs.writeFile(testFile, content);
+        await fs.chmod(testFile, 0o444);
+
+        await updateFile('test', testFile);
+
+        expect(await fs.readFile(testFile, 'utf-8')).toBe(content);
+        expect(console.error).toHaveBeenCalledWith(
+          expect.stringContaining('Error processing file'),
+          'permission denied'
+        );
+      }
+    );
+
     it('should escape control characters in printed file names', async () => {
       await updateFile('test', 'evil\u001b]0;pwned\u0007.txt');
 
