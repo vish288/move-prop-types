@@ -31,7 +31,11 @@ A suggested fix is welcome but not required.
 move-prop-types rewrites JavaScript and TypeScript source files in place.
 
 - It only writes regular files inside the path given with `-P` or the folder given with `-F`.
-  Symbolic links found while walking a folder are skipped and reported, never followed.
+  Symbolic links are skipped and reported, never followed, whether found while walking a folder
+  or given directly with `-P`. Files are opened without following links, so a path swapped for a
+  link during a run is refused too. Pipes, devices and other special files are skipped.
+- Source files are treated as untrusted input: matching stays linear in the file size, and file
+  names are printed with control characters escaped so they cannot inject terminal sequences.
 - `-I` runs `pnpm add prop-types` in the current directory. No user input is passed to the shell.
 - Commit or back up your code first and review the diff before committing the result.
 
@@ -45,3 +49,6 @@ move-prop-types rewrites JavaScript and TypeScript source files in place.
   dependency review and CodeQL code scanning.
 - GitHub Actions are pinned to commit SHAs, and workflow tokens are read-only by default.
 - Dependency install scripts do not run unless explicitly allowed in `pnpm-workspace.yaml`.
+- Vulnerable transitive dependencies are pinned to patched versions with `overrides` in
+  `pnpm-workspace.yaml`. An advisory with no patched release is ignored in `pnpm audit` only
+  after review, with the reason recorded next to it in `auditConfig.ignoreGhsas`.
