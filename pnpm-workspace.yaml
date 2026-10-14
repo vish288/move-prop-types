@@ -8,3 +8,19 @@
 allowBuilds:
   # postinstall only validates the platform binary shipped via optionalDependencies
   esbuild: false
+
+# Patched versions of vulnerable transitive dev dependencies; drop an entry once its
+# parent package requires the fixed version on its own
+overrides:
+  # GHSA-p8wg-vrv2-v86f, GHSA-8r5x-fm3f-whwj, GHSA-xw65-4hp5-5hc7 (via conventional-changelog-writer)
+  handlebars: ^4.7.10
+  # GHSA-68fv-2mgg-jv7q (via postcss and magicast)
+  source-map-js: ^1.2.2
+
+auditConfig:
+  ignoreGhsas:
+    # braces <= 3.0.3 (no patched release exists): stack exhaustion on deeply nested
+    # brace patterns. It is only reached through micromatch in semantic-release, which
+    # expands the branch and release-rule globs from this repository's own config at
+    # release time; it never sees untrusted input and is not in the published package.
+    - GHSA-vfj7-8cjw-p6xm

@@ -2,7 +2,14 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { promises as fs } from 'fs';
 import path from 'path';
 import os from 'os';
-import { findMatch, installPackage, updateFile, updateFolder } from '../../src/helper.js';
+import {
+  findMatch,
+  installPackage,
+  printable,
+  transformSource,
+  updateFile,
+  updateFolder,
+} from '../../src/helper.js';
 
 // Mock dependencies
 vi.mock('chalk', () => ({
@@ -216,6 +223,88 @@ MyComponent.propTypes = {
 
       expect(await fs.readFile(testFile, 'utf-8')).toBe(
         "const React = require('react');\nconst PropTypes = require('prop-types');\nA.propTypes = { x: PropTypes.string };\n"
+      );
+    });
+      it('should not follow a symbolic link given as the file path', async () => {
+      const outsideDir = await fs.mkdtemp(path.join(os.tmpdir(), 'mpt-outside-'));
+      const outsideFile = path.join(outsideDir, 'victim.js');
+      const link = path.join(testDir, 'linked-file.js');
+      const content = `import React, { PropTypes } from 'react';`;
+      await fs.writeFile(outsideFile, content);
+      await fs.symlink(outsideFile, link);
+
+      try {
+        await updateFile('test', link);
+
+        expect(await fs.readFile(outsideFile, 'utf-8')).toBe(content);
+        expect(console.log).toHaveBeenCalledWith(expect.stringContaining('Skipping symbolic link'));
+      } finally {
+        await fs.unlink(link);
+        await fs.rm(outsideDir, { recursive: true, force: true });
+      }
+    });
+
+    it('should leave a read-only file that needs no change without reporting an error', async () => {
+      await fs.writeFile(testFile, "import React from 'react';\n");
+      await fs.chmod(testFile, 0o444);
+
+      await updateFile('test', testFile);
+
+      expect(console.error).not.toHaveBeenCalled();
+    });
+
+    // root can write to read-only files, so this only runs as a regular user (as on CI)
+    it.skipIf(process.getuid?.() === 0)(
+      'should report a read-only file that needs a change and leave it unchanged',
+      async () => {
+        const content = "import React, { PropTypes } from 'react';\n";
+        await fs.writeFile(testFile, content);
+        await fs.chmod(testFile, 0o444);
+
+        await updateFile('test', testFile);
+
+        expect(await fs.readFile(testFile, 'utf-8')).toBe(content);
+        expect(console.error).toHaveBeenCalledWith(
+          expect.stringContaining('Error processing file'),
+          'permission denied'
+        );
+      }
+    );
+
+    it('should escape control characters in printed file names', async () => {
+      await updateFile('test', 'evil\u001b]0;pwned\u0007.txt');
+
+      const printed = vi.mocked(console.log).mock.calls.flat().join('\n');
+      expect(printed).not.toContain('\u001b');
+      expect(printed).toContain('evil\\u001b]0;pwned\\u0007.txt');
+    });
+  });
+
+  describe('printable', () => {
+    it('should escape C0 and C1 control characters and keep other text', () => {
+      expect(printable('a\u001b[2Jb\nc\u009bd é')).toBe('a\\u001b[2Jb\\u000ac\\u009bd é');
+    });
+  });
+
+  describe('transformSource', () => {
+    // Each input took seconds or more to match with the earlier unbounded patterns
+    it.each([
+      ['spaces after import', `import${' '.repeat(50_000)}x`],
+      ['import lines without from', 'import a\n'.repeat(20_000)],
+      ['import lines without a module', 'import a from \n'.repeat(20_000)],
+      ['blank lines', `${'\n'.repeat(100_000)}x`],
+      ['from followed by spaces', `${'import a\n'.repeat(500)}import a from${' '.repeat(100_000)}x`],
+    ])('should handle %s in linear time', (_name, source) => {
+      const started = performance.now();
+      expect(transformSource(source)).toBeNull();
+      expect(performance.now() - started).toBeLessThan(1000);
+    });
+
+    it('should still convert a multi-line react import', () => {
+      const source = "import React, {\n  Component,\n  PropTypes,\n} from 'react';\nA.propTypes = { x: PropTypes.string };\n";
+
+      expect(transformSource(source)).toBe(
+        "import React, { Component } from 'react';\nimport PropTypes from 'prop-types';\nA.propTypes = { x: PropTypes.string };\n"
       );
     });
   });

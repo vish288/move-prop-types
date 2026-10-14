@@ -2,8 +2,7 @@
  * Module dependencies
  */
 import chalk from 'chalk';
-import { stdout } from 'process';
-import { lstatSync, readdir, readFile, writeFile } from 'fs';
+import { constants, lstatSync, promises as fsPromises, readdir, readFile, writeFile } from 'fs';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 
@@ -51,13 +50,33 @@ export const installPackage: InstallPackageFunction = async (): Promise<void> =>
   }
 };
 
-const REACT_IMPORT = /^import\s+([^;]*?)\s+from\s*(['"])react\2;?[ \t]*\n?/gm;
+// Patterns run on untrusted source files, so every repetition that can backtrack is bounded
+// to keep matching linear in the file size (an unbounded clause took seconds on a 4 KB line)
+const MAX_IMPORT_CLAUSE = 2000;
+const REACT_IMPORT = new RegExp(
+  `^import(?=\\s)([^;'"]{0,${MAX_IMPORT_CLAUSE}}?)\\bfrom\\s{0,100}(['"])react\\2;?[ \\t]*\\n?`,
+  'gm'
+);
 const REACT_REQUIRE = /^.*\brequire\(\s*(['"])react\1\s*\).*\n?/m;
-const PROP_TYPES_IMPORTED = /^\s*import\s+PropTypes\s+from\s*(['"])prop-types\1/m;
+const PROP_TYPES_IMPORTED = /^[ \t]*import\s+PropTypes\s+from\s*(['"])prop-types\1/m;
 const REACT_PROP_TYPES = /\bReact\.PropTypes\b/g;
 const USES_REACT_PROP_TYPES = /\bReact\.PropTypes\b/;
 const PROP_TYPES_IMPORT = "import PropTypes from 'prop-types';\n";
 const PROP_TYPES_REQUIRE = "const PropTypes = require('prop-types');\n";
+
+// C0/C1 control characters (including ESC) that a terminal would interpret
+// eslint-disable-next-line no-control-regex
+const CONTROL_CHARS = /[\u0000-\u001f\u007f-\u009f]/g;
+
+/**
+ * Make a file name or error message safe to print: file names come from the scanned
+ * tree and could otherwise carry escape sequences that rewrite the user's terminal.
+ */
+export const printable = (text: string): string =>
+  text.replace(CONTROL_CHARS, (char) => `\\u${char.charCodeAt(0).toString(16).padStart(4, '0')}`);
+
+const errorText = (error: unknown): string =>
+  printable(error instanceof Error ? error.message : String(error));
 
 /**
  * Remove a `PropTypes` named import from the clause of one `import ... from 'react'`
@@ -77,7 +96,10 @@ const removePropTypesSpecifier = (clause: string): string | null => {
     return null;
   }
   const remaining = named.filter((name) => name !== 'PropTypes');
-  const defaultPart = clause.slice(0, braces.index).replace(/,\s*$/, '').trim();
+  let defaultPart = clause.slice(0, braces.index).trim();
+  if (defaultPart.endsWith(',')) {
+    defaultPart = defaultPart.slice(0, -1).trim();
+  }
   const namedPart = remaining.length ? `{ ${remaining.join(', ')} }` : '';
   return [defaultPart, namedPart].filter(Boolean).join(', ');
 };
@@ -137,22 +159,73 @@ export const transformSource = (source: string): string | null => {
   return result.replace(REACT_PROP_TYPES, 'PropTypes');
 };
 
+// Never follow a symbolic link when opening a file to rewrite, and never block on a pipe
+// (O_NOFOLLOW and O_NONBLOCK are not defined on Windows)
+const OPEN_FLAGS = (constants.O_NOFOLLOW ?? 0) | (constants.O_NONBLOCK ?? 0);
+const NOT_WRITABLE = ['EACCES', 'EPERM', 'EROFS'];
+
+const errorCode = (error: unknown): string | undefined => (error as { code?: string }).code;
+
 /**
- * Write file with ES6 prop-types conversion
+ * Open a file once for both reading and writing, so the file that is checked and read is the
+ * one that gets written. A file that cannot be opened for writing is opened read-only: it is
+ * reported only if it needs a change.
+ */
+const openForRewrite = async (
+  fileAndPath: string
+): Promise<{ handle: fsPromises.FileHandle; writable: boolean }> => {
+  try {
+    return { handle: await fsPromises.open(fileAndPath, constants.O_RDWR | OPEN_FLAGS), writable: true };
+  } catch (error: unknown) {
+    if (!NOT_WRITABLE.includes(errorCode(error) ?? '')) {
+      throw error;
+    }
+    return { handle: await fsPromises.open(fileAndPath, constants.O_RDONLY | OPEN_FLAGS), writable: false };
+  }
+};
+
+/**
+ * Write file with ES6 prop-types conversion.
+ * The file is opened without following symbolic links and must be a regular file, and the
+ * same open file is read and rewritten, so a path swapped for a link or another file after
+ * the folder walk checked it cannot redirect the write.
  */
 const writeFileAsyncEs6 = async (fileAndPath: string): Promise<void> => {
+  const shownPath = printable(fileAndPath);
+  let handle: fsPromises.FileHandle | undefined;
   try {
-    const data = await readFileAsync(fileAndPath, fileEncoding);
-    const newData = transformSource(data.toString());
-    if (newData === null) {
+    const opened = await openForRewrite(fileAndPath);
+    ({ handle } = opened);
+    if (!(await handle.stat()).isFile()) {
+      console.log(`Skipping ${shownPath} - not a regular file`);
       return;
     }
 
-    await writeFileAsync(fileAndPath, newData, fileEncoding);
-    console.log(`${chalk.magenta.italic(fileAndPath)} just got ${chalk.green('updated')}!`);
+    const newData = transformSource(await handle.readFile({ encoding: fileEncoding }));
+    if (newData === null) {
+      return;
+    }
+    if (!opened.writable) {
+      console.error(`Error processing file ${shownPath}:`, 'permission denied');
+      return;
+    }
+
+    const bytes = Buffer.from(newData, fileEncoding);
+    await handle.truncate(0);
+    for (let written = 0; written < bytes.length; ) {
+      const { bytesWritten } = await handle.write(bytes, written, bytes.length - written, written);
+      written += bytesWritten;
+    }
+    console.log(`${chalk.magenta.italic(shownPath)} just got ${chalk.green('updated')}!`);
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error(`Error processing file ${fileAndPath}:`, errorMessage);
+    const code = errorCode(error);
+    if (code === 'ELOOP' || code === 'EMLINK') {
+      console.log(`Skipping symbolic link ${shownPath}`);
+      return;
+    }
+    console.error(`Error processing file ${shownPath}:`, errorText(error));
+  } finally {
+    await handle?.close();
   }
 };
 
@@ -199,7 +272,7 @@ export const updateFile: UpdateFileFunction = async (
   // Handle file extension validation
   if (/[.]/.exec(targetPath)) {
     if (!/\S+\.(jsx?|tsx?)$/.test(targetPath)) {
-      console.log(`Skipping ${targetPath} - not a .js, .jsx, .ts, or .tsx file`);
+      console.log(`Skipping ${printable(targetPath)} - not a .js, .jsx, .ts, or .tsx file`);
       return;
     }
   } else {
@@ -222,7 +295,7 @@ export const updateFile: UpdateFileFunction = async (
     
     if (!found) {
       console.log(
-        `${chalk.magenta.italic(targetPath)} doesn't ${chalk.red.inverse(
+        `${chalk.magenta.italic(printable(targetPath))} doesn't ${chalk.red.inverse(
           'seem to exist in the given path'
         )} with extensions .js, .jsx, .ts, or .tsx`
       );
@@ -250,7 +323,7 @@ export const updateFolder: UpdateFolderFunction = async (
     // Never follow symbolic links: they can point outside the target folder
     const links = entries.filter(({ stats }) => stats.isSymbolicLink());
     for (const { name } of links) {
-      console.log(`Skipping symbolic link ${folderName}/${name}`);
+      console.log(`Skipping symbolic link ${printable(`${folderName}/${name}`)}`);
     }
     const files = entries.filter(({ stats }) => !stats.isSymbolicLink());
 
@@ -278,20 +351,17 @@ export const updateFolder: UpdateFolderFunction = async (
 
     console.log('');
     console.log(
-      `folder ${chalk.underline.yellowBright(folderName)} and js/jsx/ts/tsx files inside are now ${chalk.greenBright(
+      `folder ${chalk.underline.yellowBright(printable(folderName))} and js/jsx/ts/tsx files inside are now ${chalk.greenBright(
         'ready'
       )}!`
     );
-    stdout.write('\x1b[2J');
-    stdout.write('\x1b[0f');
     console.log(
       `Your folder and files have been updated. Thank you for using ${chalk.yellowBright(
         'move-prop-types'
       )}`
     );
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error(`Error processing folder ${folderName}:`, errorMessage);
+    console.error(`Error processing folder ${printable(folderName)}:`, errorText(error));
   }
 };
 
