@@ -48,7 +48,7 @@
   "license": "MIT",
   "dependencies": {
     "chalk": "^6.0.1",
-    "commander": "^15.0.0"
+    "commander": "^15.1.0"
   },
   "devDependencies": {
     "@babel/core": "^8.1.0",
@@ -79,7 +79,7 @@
     "prettier": "^3.9.10",
     "prop-types": "^15.8.1",
     "rimraf": "^6.1.4",
-    "rollup": "^4.67.5",
+    "rollup": "^4.68.0",
     "semantic-release": "^25.0.9",
     "typescript": "^6.0.3",
     "vite": "^8.3.6",
